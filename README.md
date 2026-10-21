@@ -61,7 +61,7 @@ Este repositorio contiene **solo el frontend**. La calificación del test, el ch
 | Vista `/comenzar` | Terminada |
 | Test vocacional | Provisional (preguntas de ejemplo) |
 | Chat con A.N.A | Provisional (no llama a la API) |
-| Protección de rutas | Pendiente |
+| Protección de rutas y sesión (Supabase Auth) | ✅ Terminada |
 | Avatar animado (Rive) | Pendiente |
 
 
@@ -74,17 +74,17 @@ Este repositorio contiene **solo el frontend**. La calificación del test, el ch
 | RF-01 | Mostrar una página de inicio que presente el asistente, sus pasos y el acceso al test y al chat. | ✅ |
 | RF-02 | Mostrar páginas informativas: **Nosotros** y **Preguntas frecuentes**. | ✅ |
 | RF-03 | Mostrar el **Aviso de privacidad** y la **Política de uso**. | ✅ (el contenido debe actualizarse: borrado a 30 días, datos que entrega Microsoft, responsable y correo ARCO) |
-| RF-04 | Permitir iniciar sesión **únicamente con cuenta institucional de Microsoft** (Azure / Entra ID vía Supabase Auth). | ⏳ El botón existe; falta la integración |
+| RF-04 | Permitir iniciar sesión **únicamente con cuenta institucional de Microsoft** (Azure / Entra ID vía Supabase Auth). | 🟡 Integrado; se activa con `NEXT_PUBLIC_LOGIN_MICROSOFT=true` cuando TI autorice la app. Mientras tanto: enlace de acceso por correo |
 | RF-05 | Exigir la aceptación del aviso de privacidad y la política de uso antes de iniciar sesión. | 🟡 Se bloquea el botón; falta registrar la aceptación en la base de datos |
-| RF-06 | Informar el resultado del inicio de sesión: éxito o error (cuenta no autorizada, cancelado, falla del servidor). | 🟡 Vistas listas; falta la ruta `/auth/callback` y el motivo del error |
-| RF-07 | Redirigir al usuario a `/comenzar` al iniciar sesión, donde elige entre el test y el chat. | 🟡 Vista lista; falta la redirección |
-| RF-08 | Impedir el acceso a `/comenzar`, `/test` y `/chat` sin sesión (redirige a `/login`). | ⏳ |
+| RF-06 | Informar el resultado del inicio de sesión: éxito o error (cuenta no autorizada, cancelado, falla del servidor). | ✅ `/auth/callback` crea la sesión; `/login/error?motivo=dominio\|enlace\|cancelado` |
+| RF-07 | Redirigir al usuario a `/comenzar` al iniciar sesión, donde elige entre el test y el chat. | ✅ |
+| RF-08 | Impedir el acceso a `/comenzar`, `/test` y `/chat` sin sesión (redirige a `/login`). | ✅ `proxy.ts` + verificación en `app/(protected)/layout.tsx` |
 | RF-09 | Mostrar el test con los ítems que entrega el backend (`GET /api/test/items`) y respuesta Likert 1–5. | ⏳ |
 | RF-10 | Enviar las respuestas (`POST /api/test`) y mostrar el resultado: especialidad recomendada, código RIASEC, perfil por dimensión y nivel de congruencia. | ⏳ |
 | RF-11 | Permitir conversar con A.N.A (`POST /api/chat`), indicando el área de interés y enviando el historial de la conversación. | ⏳ |
 | RF-12 | Mostrar un indicador de "pensando" mientras se genera la respuesta del chat. | ⏳ |
 | RF-13 | Animar el avatar según el estado de la conversación (`idle`, `thinking`, `talking`, `error`). | ⏳ |
-| RF-14 | Mostrar el estado de la sesión en el encabezado y permitir cerrar sesión. | ⏳ |
+| RF-14 | Mostrar el estado de la sesión en el encabezado y permitir cerrar sesión. | 🟡 Cerrar sesión en rutas protegidas; el encabezado público aún muestra "Ingresar" |
 | RF-15 | Cambiar entre tema claro y oscuro y recordar la preferencia. | ✅ |
 | RF-16 | Mostrar una página 404 personalizada. | ✅ |
 
@@ -98,7 +98,7 @@ Este repositorio contiene **solo el frontend**. La calificación del test, el ch
 | RNF-02 | ♿ Accesibilidad | Etiquetas ARIA, navegación por teclado, contraste suficiente y respeto a "reducir movimiento" (`prefers-reduced-motion`). | 🟡 Aplicado en componentes; falta una auditoría WCAG 2.2 completa |
 | RNF-03 | ⚡ Rendimiento | Páginas estáticas prerenderizadas, fuentes con `next/font`, imágenes con `next/image` y animaciones que no redibujan la página. | ✅ |
 | RNF-04 | 🌗 Experiencia | El tema se aplica antes del primer pintado (sin parpadeo). | ✅ |
-| RNF-05 | 🔒 Seguridad | Ningún secreto en el frontend: solo variables públicas (`NEXT_PUBLIC_*`); la sesión viaja en cookies gestionadas por Supabase y el token al backend en el header `Authorization`. | ⏳ Se aplica al integrar Supabase |
+| RNF-05 | 🔒 Seguridad | Ningún secreto en el frontend: solo variables públicas (`NEXT_PUBLIC_*`); la sesión viaja en cookies gestionadas por Supabase y el token al backend en el header `Authorization`. | ✅ Además: CSP, `nosniff`, `frame-ancestors 'none'` y `Permissions-Policy` en `next.config.ts` |
 | RNF-06 | 🔒 Seguridad | Solo cuentas del tenant institucional de Microsoft; el backend vuelve a validar el dominio del correo. | ⏳ |
 | RNF-07 | 🛡️ Privacidad | Cumplir la LGPDPPSO: aviso de privacidad visible antes del registro y resultados borrados a los 30 días (lo hace el backend). | 🟡 |
 | RNF-08 | 🌐 Idioma | Interfaz completamente en español. | ✅ |
@@ -136,7 +136,7 @@ Este repositorio contiene **solo el frontend**. La calificación del test, el ch
 | `/test` | 🔐 Protegida* | Test vocacional (provisional) |
 | `/chat` | 🔐 Protegida* | Chat con A.N.A (provisional) |
 
-\* La protección se implementará con `proxy.ts` y un layout de servidor cuando se integre Supabase Auth.
+\* Protegidas con `proxy.ts` (refresca la sesión y redirige) y con una segunda verificación en el servidor en `app/(protected)/layout.tsx`. Ambas exigen correo de un dominio permitido.
 
 ---
 
@@ -185,14 +185,16 @@ npm start          # sirve la compilación
 npm run lint       # revisión con ESLint
 ```
 
-### 🔧 Variables de entorno (al integrar Supabase y el backend)
+### 🔧 Variables de entorno
 
-Crear `.env.local` (no se sube al repositorio):
+Copiar `.env.example` como `.env.local` (no se sube al repositorio) y definir las mismas variables en Vercel → Settings → Environment Variables:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://TU-PROYECTO.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=tu-anon-key
-NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8000        # o https://tu-dominio.ngrok-free.app
+NEXT_PUBLIC_DOMINIOS_CORREO=merida.tecnm.mx       # separados por coma
+NEXT_PUBLIC_LOGIN_MICROSOFT=false                 # true cuando Azure esté activo
 ```
 
 > ⚠️ Nunca pongas la llave `service_role` de Supabase en el frontend.
@@ -205,12 +207,14 @@ NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
 | --- | --- | --- | --- |
 | `GET` | `/api/test/items?version=B` | Ítems del test | `Authorization: Bearer <token>` |
 | `POST` | `/api/test` | Calificar y guardar el test | `Authorization: Bearer <token>` |
-| `POST` | `/api/chat` | Pregunta a A.N.A (`mensaje`, `area`, `historial`) | — |
+| `POST` | `/api/chat` | Pregunta a A.N.A (`mensaje` ≤ 1000 caracteres, `area`, `historial` ≤ 20 mensajes) | `Authorization: Bearer <token>` |
 
 - El `area` del chat debe ser `ciberseguridad`, `desarrollo` o `ia`; el resultado del test devuelve el `area` sugerida.
 - La respuesta del chat incluye `estado_avatar` (`talking` o `error`) para animar a A.N.A.
 
-### 🔐 Flujo de inicio de sesión previsto
+Usa el cliente de `lib/api.ts` (`api.itemsTest()`, `api.enviarTest()`, `api.chat()`): adjunta el token de la sesión y lanza `ApiError` (con `status`); ante `401`, la vista debe redirigir a `/login` con `useRouter()`.
+
+### 🔐 Flujo de inicio de sesión
 
 ```
 Botón "Continuar con Microsoft"

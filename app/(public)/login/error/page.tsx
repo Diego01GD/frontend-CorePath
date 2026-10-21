@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Suspense } from "react";
+import MotivoError from "./motivo-error";
 import EntranceAnimation from "../../../components/entrance-animation";
 
 export default function LoginErrorPage() {
@@ -15,12 +17,12 @@ export default function LoginErrorPage() {
           Acceso no autorizado
         </p>
         <h1 className="mt-3 font-titulos text-4xl font-bold">
-          Usa tu correo institucional
+          No pudimos iniciar tu sesión
         </h1>
         <p className="mx-auto mt-4 max-w-md leading-7 text-ctext/70">
-          La cuenta de Microsoft utilizada no pertenece al grupo institucional
-          autorizado para CorePath. Cierra sesión en Microsoft e inténtalo de
-          nuevo con una cuenta permitida.
+          <Suspense fallback={null}>
+            <MotivoError />
+          </Suspense>
         </p>
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           <Link href="/login" className="btn btn-primary">

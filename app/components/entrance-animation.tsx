@@ -10,11 +10,13 @@ export default function EntranceAnimation({
   children,
   className,
   delay = 0,
+  ...props
 }: EntranceAnimationProps) {
   const reducedMotion = useReducedMotion();
 
   return (
     <motion.div
+      {...props}
       className={className}
       initial={reducedMotion ? false : { opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}

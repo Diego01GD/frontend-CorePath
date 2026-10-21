@@ -2,13 +2,48 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import EntranceAnimation from "../../components/entrance-animation";
+import { correoPermitido, DOMINIO_PRINCIPAL } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/client";
+
+const redirectTo = () => `${window.location.origin}/auth/callback`;
+// Se activa con NEXT_PUBLIC_LOGIN_MICROSOFT=true cuando el proveedor Azure esté configurado en Supabase
+const MICROSOFT_ACTIVO = process.env.NEXT_PUBLIC_LOGIN_MICROSOFT === "true";
 
 export default function LoginPage() {
   const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
   const [acceptedUsage, setAcceptedUsage] = useState(false);
   const acceptedPolicies = acceptedPrivacy && acceptedUsage;
+  const [email, setEmail] = useState("");
+  const [estado, setEstado] = useState<"idle" | "enviando" | "enviado" | "error">("idle");
+  const [mensaje, setMensaje] = useState("");
+
+  const loginMicrosoft = async () => {
+    setMensaje("");
+    const { error } = await createClient().auth.signInWithOAuth({
+      provider: "azure",
+      options: { scopes: "email", redirectTo: redirectTo() },
+    });
+    if (error) setMensaje("El inicio de sesión con Microsoft aún no está disponible. Usa el enlace por correo.");
+  };
+
+  // shortcut: acceso temporal por enlace al correo mientras TI autoriza la app de Microsoft; quitar este formulario después
+  const enviarEnlace = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!correoPermitido(email)) {
+      setEstado("error");
+      setMensaje(`Usa tu correo institucional @${DOMINIO_PRINCIPAL}.`);
+      return;
+    }
+    setEstado("enviando");
+    const { error } = await createClient().auth.signInWithOtp({
+      email: email.trim().toLowerCase(),
+      options: { emailRedirectTo: redirectTo() },
+    });
+    setEstado(error ? "error" : "enviado");
+    setMensaje(error ? "No se pudo enviar el enlace. Intenta de nuevo en unos minutos." : "Revisa tu correo y abre el enlace en este mismo navegador.");
+  };
 
   return (
     <main className="flex min-h-[calc(100vh-6rem)] w-full flex-col items-stretch justify-center lg:flex-row">
@@ -77,7 +112,8 @@ export default function LoginPage() {
 
             <button
               type="button"
-              disabled={!acceptedPolicies}
+              disabled={!acceptedPolicies || !MICROSOFT_ACTIVO}
+              onClick={loginMicrosoft}
               className="btn btn-primary mt-4 w-full"
             >
               <Image
@@ -86,8 +122,35 @@ export default function LoginPage() {
                 width={20}
                 height={20}
               />
-              Continuar con Microsoft
+              {MICROSOFT_ACTIVO ? "Continuar con Microsoft" : "Microsoft (próximamente)"}
             </button>
+
+            <form onSubmit={enviarEnlace} className="space-y-3 border-t border-bordes-s/20 pt-4">
+              <label htmlFor="correo" className="block text-sm font-bold">
+                O recibe un enlace de acceso en tu correo
+              </label>
+              <input
+                id="correo"
+                type="email"
+                required
+                autoComplete="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder={`usuario@${DOMINIO_PRINCIPAL}`}
+                className="input input-bordered w-full bg-background"
+              />
+              <button
+                type="submit"
+                disabled={!acceptedPolicies || estado === "enviando"}
+                className="btn btn-outline w-full border-primary text-primary hover:bg-primary hover:text-surfaces"
+              >
+                {estado === "enviando" ? "Enviando…" : "Enviarme el enlace"}
+              </button>
+            </form>
+
+            <p role="status" aria-live="polite" className={`min-h-5 text-sm ${estado === "error" ? "text-error" : "text-success"}`}>
+              {mensaje}
+            </p>
           </div>
 
           <p className="mt-6 text-center text-xs leading-5 text-ctext/60">

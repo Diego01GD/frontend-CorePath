@@ -12,7 +12,7 @@ const pillars = [
 
 const team = [
   { initials: "DT", focus: "Diseño & Frontend", name: "Diego Alejandro Tzec Ku", role: "Co-Fundador & Diseñador UI/UX", github: "https://github.com/Diego01GD", linkedin: "https://www.linkedin.com/in/diego-tzec-ku-529938259" },
-  { initials: "AL", focus: "IA & Backend", name: "Angel Josue Lopez Castilla", role: "Co-Fundador & Ingeniero de IA", github: "", linkedin: "" },
+  { initials: "AL", focus: "IA & Backend", name: "Angel Josue Lopez Castilla", role: "Co-Fundador & Ingeniero de IA", github: "https://github.com/DimoltoSs", linkedin: "" },
 ];
 
 const reveal = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.6 } } };

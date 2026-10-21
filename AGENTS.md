@@ -35,19 +35,22 @@ Asistente vocacional del Instituto Tecnológico de Mérida. Ver `README.md` para
 
 ### Contexto
 - Solo frontend. La calificación del test RIASEC, el chatbot (RAG + Ollama) y la base de datos (Supabase) están en el backend FastAPI; aquí no se replica esa lógica.
-- Contrato del backend: `GET /api/test/items`, `POST /api/test` (requieren `Authorization: Bearer <token de Supabase>`) y `POST /api/chat` (`mensaje`, `area` = `ciberseguridad` | `desarrollo` | `ia`, `historial` con `role` = `user` | `assistant`).
-- Login previsto: solo Microsoft (Azure / Entra ID) vía Supabase Auth, cuentas institucionales. Tras iniciar sesión se redirige a `/comenzar`.
+- Contrato del backend (todos requieren `Authorization: Bearer <token de Supabase>`): `GET /api/test/items`, `POST /api/test` y `POST /api/chat` (`mensaje` ≤ 1000, `area` = `ciberseguridad` | `desarrollo` | `ia`, `historial` ≤ 20 con `role` = `user` | `assistant`). Llamarlos solo con `lib/api.ts`.
+- Login: Microsoft (Azure / Entra ID) vía Supabase Auth, activado con `NEXT_PUBLIC_LOGIN_MICROSOFT`; mientras tanto, enlace por correo (temporal, marcado con `shortcut:` en `login/page.tsx`). Ambos vuelven a `/auth/callback`, que redirige a `/comenzar`.
 - `/test` y `/chat` son provisionales; no tratarlas como diseño final.
 
 ### Convenciones
 - Todo el texto de la interfaz va en **español**.
-- Rutas en grupos: `app/(public)` (con `Header`) y `app/(protected)` (encabezado con "← Inicio"). La protección de rutas irá en `proxy.ts` (en Next 16 reemplaza a `middleware`) **y** en `app/(protected)/layout.tsx`.
+- Rutas en grupos: `app/(public)` (con `Header`) y `app/(protected)` (encabezado con "← Inicio" y cerrar sesión). La protección está en `proxy.ts` (en Next 16 reemplaza a `middleware`) **y** en `app/(protected)/layout.tsx`; mantener ambas. Rutas protegidas nuevas: agregarlas a `RUTAS_PROTEGIDAS` en `lib/auth.ts`.
+- Con `cacheComponents`, leer la sesión (`cookies()`, `getClaims()`) solo dentro de `<Suspense>`; ver `node_modules/next/dist/docs/01-app/02-guides/authentication-with-cache-components.md`.
+- Supabase: clientes en `lib/supabase/` (`client.ts` navegador, `server.ts` servidor, `proxy.ts` refresco). Para verificar identidad usar `getClaims()`, nunca `getSession()` en el servidor.
+- La CSP está en `next.config.ts`: un servicio externo nuevo (Rive, analíticas, otra API) debe agregarse a `connect-src`/`script-src` o el navegador lo bloqueará.
 - Componentes compartidos en `app/components/`, nombres de archivo en kebab-case.
 - Colores solo con los tokens de `globals.css` (`primary`, `accent`, `cards`, `ctext`, ...). Usar `primary/15` en lugar de `primary-l` para fondos suaves: en tema oscuro `primary-l` es un rosa intenso con poco contraste.
 - Los colores de daisyUI se reasignan a los tokens en `globals.css`; no quitar ese bloque o `btn-primary` vuelve a ser morado.
 - El tema lo aplica el script inline de `app/layout.tsx` antes del primer pintado; `ThemeControl` solo lo alterna. Mantener ambos sincronizados.
 - Animaciones de entrada con `EntranceAnimation` (respeta `prefers-reduced-motion`). Para animaciones continuas usar motion values de framer-motion, no `setState` en `requestAnimationFrame`.
-- La orientadora se llama **Kiara** (algunas vistas aún dicen "A.N.A"; pendiente de unificar).
+- La orientadora se llama **A.N.A**.
 
 ### Antes de entregar cambios
 - `npm run lint` y `npm run build` sin errores.
