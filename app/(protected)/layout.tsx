@@ -1,13 +1,15 @@
 import { Suspense } from "react";
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { LogOut, MoveLeft } from "lucide-react";
+import { connection } from "next/server";
 import Logotipo from "../components/logo";
+import AccionesSesion from "../components/acciones-sesion";
 import { correoPermitido } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 
 // Segunda barrera tras el proxy: verifica la sesión en el servidor antes de mostrar la página
 async function RequiereSesion({ children }: { children: React.ReactNode }) {
+  // Solo en tiempo de petición: getClaims compara la caducidad del token con Date.now()
+  await connection();
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   if (!correoPermitido(data?.claims?.email)) redirect("/login");
@@ -22,19 +24,10 @@ export default function ProtectedLayout({
       <header className="w-full bg-cards p-4">
         <div className="m-auto flex max-w-7xl items-center justify-between gap-4">
           <Logotipo />
-          <nav className="flex items-center gap-5" aria-label="Sesión">
-            <Link href="/" className="flex items-center gap-1.5 font-bold text-primary hover:text-primary-h">
-              <MoveLeft aria-hidden="true" />
-              Inicio
-            </Link>
-            <form action="/auth/salir" method="post">
-              <button type="submit" className="flex items-center gap-1.5 text-sm text-ctext/70 hover:text-primary">
-                <LogOut size={18} aria-hidden="true" />
-                <span className="hidden sm:inline">Cerrar sesión</span>
-                <span className="sr-only sm:hidden">Cerrar sesión</span>
-              </button>
-            </form>
-          </nav>
+          {/* usePathname es dato de la petición en rutas dinámicas (/resultados/[id]) */}
+          <Suspense fallback={<span className="size-11" aria-hidden="true" />}>
+            <AccionesSesion />
+          </Suspense>
         </div>
       </header>
       {/* Con cacheComponents, leer la sesión debe ir dentro de Suspense; el encabezado sale en el shell estático */}

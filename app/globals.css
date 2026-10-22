@@ -25,6 +25,16 @@
   --cib: #7c3aed;
   --web: #b45309;
   --ia: #0e7490;
+  --panel: #f4f4f5;
+  --ctext-2: #6b5a4b;
+  --pista: #cac5c1;
+  /* RIASEC: un color por dimensión (gráfico y código) */
+  --dim-r: #059669;
+  --dim-i: #2563eb;
+  --dim-a: #8b5cf6;
+  --dim-s: #f97316;
+  --dim-e: #e11d48;
+  --dim-c: #475569;
 }
 
 @theme inline {
@@ -42,6 +52,9 @@
   --color-cib: var(--cib);
   --color-web: var(--web);
   --color-ia: var(--ia);
+  --color-panel: var(--panel);
+  --color-ctext-2: var(--ctext-2);
+  --color-pista: var(--pista);
 
   --font-titulos: var(--font-titulos);
   --font-textos: var(--font-textos);
@@ -64,6 +77,16 @@
     --cib: #7c3aed;
     --web: #b45309;
     --ia: #0e7490;
+    --panel: #26282f;
+    --ctext-2: #b9ada2;
+    --pista: #3a3c44;
+    /* Versiones más claras: los tonos 500–600 no contrastan sobre el fondo oscuro */
+    --dim-r: #34d399;
+    --dim-i: #60a5fa;
+    --dim-a: #a78bfa;
+    --dim-s: #fb923c;
+    --dim-e: #fb7185;
+    --dim-c: #94a3b8;
 }
 
 /* Los temas de daisyUI definen su propio --color-primary (morado); se reemplaza por la paleta del proyecto */

@@ -49,12 +49,12 @@ export default function Home() {
               <Link href="/login" className="inline-block rounded-xl bg-primary w-full lg:w-auto text-center px-5 py-3.5 font-bold hover:bg-primary-h text-surfaces">
                 Comenzar el test
               </Link>
-              <Link href="/login" className="inline-block font-semibold hover:text-lg py-3.5 ">
+              <Link href="/login" className="inline-block rounded-xl w-full lg:w-auto text-center px-5 py-3.5 font-semibold hover:text-lg border border-bordes-s lg:border-none">
                 Chatea con A.N.A
               </Link>
             </motion.div>
 
-            <motion.div variants={entrance} className="flex flex-wrap items-center justify-center gap-7 lg:justify-items-start">
+            <motion.div variants={entrance} className="flex flex-wrap items-center justify-center gap-7 lg:mt-0 mt-7 lg:justify-items-start">
               <div className="flex items-center gap-3"><div className="h-3 w-3 rounded-4xl bg-success" /><p>En solo 10 min.</p></div>
               <div className="flex items-center gap-3"><div className="h-3 w-3 rounded-4xl bg-success" /><p>Puedes pausar</p></div>
               <div className="flex items-center gap-3"><div className="h-3 w-3 rounded-4xl bg-success" /><p>Basado en RIASEC</p></div>
@@ -67,14 +67,14 @@ export default function Home() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
           >
-            <figure className="flex w-full items-center justify-center">
+            <figure className="flex lg:w-full w-5/6 items-center justify-center">
               <Image src="/images/Lobo_Tec_SF.png" width={300} height={300} alt="Agente Pedagogico A.N.A" />
             </figure>
-            <p className="rounded-2xl bg-cards px-20 py-5 text-3xl font-bold">A.N.A</p>
+            <p className="rounded-2xl bg-cards lg:px-20 lg:py-5 px-10 py-3 lg:text-3xl text-2xl font-bold">A.N.A</p>
           </motion.div>
         </section>
 
-        <section className="py-24">
+        <section className="lg:py-24 py-10">
           <motion.div
             className="mx-auto max-w-2xl text-center"
             initial="hidden"

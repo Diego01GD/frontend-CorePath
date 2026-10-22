@@ -37,7 +37,7 @@ Asistente vocacional del Instituto Tecnológico de Mérida. Ver `README.md` para
 - Solo frontend. La calificación del test RIASEC, el chatbot (RAG + Ollama) y la base de datos (Supabase) están en el backend FastAPI; aquí no se replica esa lógica.
 - Contrato del backend (todos requieren `Authorization: Bearer <token de Supabase>`): `GET /api/test/items`, `POST /api/test` y `POST /api/chat` (`mensaje` ≤ 1000, `area` = `ciberseguridad` | `desarrollo` | `ia`, `historial` ≤ 20 con `role` = `user` | `assistant`). Llamarlos solo con `lib/api.ts`.
 - Login: Microsoft (Azure / Entra ID) vía Supabase Auth, activado con `NEXT_PUBLIC_LOGIN_MICROSOFT`; mientras tanto, enlace por correo (temporal, marcado con `shortcut:` en `login/page.tsx`). Ambos vuelven a `/auth/callback`, que redirige a `/comenzar`.
-- `/test` y `/chat` son provisionales; no tratarlas como diseño final.
+- `/chat` y el detalle `/resultados/[id]` son provisionales; `/test` ya sigue el diseño de Figma.
 
 ### Convenciones
 - Todo el texto de la interfaz va en **español**.
@@ -51,6 +51,9 @@ Asistente vocacional del Instituto Tecnológico de Mérida. Ver `README.md` para
 - El tema lo aplica el script inline de `app/layout.tsx` antes del primer pintado; `ThemeControl` solo lo alterna. Mantener ambos sincronizados.
 - Animaciones de entrada con `EntranceAnimation` (respeta `prefers-reduced-motion`). Para animaciones continuas usar motion values de framer-motion, no `setState` en `requestAnimationFrame`.
 - La orientadora se llama **A.N.A**.
+- Resultados del test: se leen directo de Supabase con `lib/resultados.ts` (la RLS solo devuelve los del usuario); no hay endpoint en el backend. Se borran a los 30 días: usar `lib/retencion.ts` para los días restantes (prueba: `node lib/retencion.test.ts`).
+- El gráfico RIASEC es Chart.js (solo el radar, en `app/components/radar-riasec.tsx`); toma colores de los tokens CSS y los actualiza al cambiar el tema.
+- Sesión en la interfaz: `MenuUsuario` (ícono con "Mis resultados" y "Cerrar sesión") reemplaza a "Ingresar"; al cerrar sesión borra el progreso local del test (`corepath:test:*`).
 
 ### Antes de entregar cambios
 - `npm run lint` y `npm run build` sin errores.

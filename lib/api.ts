@@ -15,16 +15,22 @@ async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
   // Las vistas capturan ApiError con status 401 y redirigen con useRouter().push("/login")
   if (!token) throw new ApiError(401, "Inicia sesión para continuar.");
 
-  const res = await fetch(`${API_URL}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-      // Evita la página de advertencia de ngrok (plan gratuito) en las respuestas de la API
-      "ngrok-skip-browser-warning": "1",
-      ...init.headers,
-    },
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${API_URL}${path}`, {
+      ...init,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+        // Evita la página de advertencia de ngrok (plan gratuito) en las respuestas de la API
+        "ngrok-skip-browser-warning": "1",
+        ...init.headers,
+      },
+    });
+  } catch {
+    // fetch solo lanza si no hubo respuesta: backend o túnel apagados, sin internet o bloqueo por CORS/CSP
+    throw new ApiError(0, "No se pudo conectar con el servidor. Verifica que el backend esté encendido e intenta de nuevo.");
+  }
 
   if (!res.ok) {
     const body = await res.json().catch(() => null);

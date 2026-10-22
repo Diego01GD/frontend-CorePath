@@ -1,6 +1,6 @@
-import Link from "next/link"
 import Logotipo from "./logo"
 import Menu from "./menu"
+import MenuUsuario from "./menu-usuario"
 
 const Header = () => {
   return (
@@ -9,7 +9,7 @@ const Header = () => {
         <Logotipo />
         <div className="flex gap-4 lg:gap-20 items-center flex-row-reverse md:flex-row lg:flex-row">
           <Menu />
-          <Link href="/login" className="text-primary font-bold px-5 py-3 border border-primary rounded-2xl hover:bg-primary hover:text-surfaces hover:font-bold">Ingresar</Link>
+          <MenuUsuario />
         </div>
       </div>
     </header>

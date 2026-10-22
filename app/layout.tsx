@@ -13,12 +13,29 @@ const fontTextos = Plus_Jakarta_Sans({
   subsets: ["latin"],
 });
 
+const DESCRIPCION =
+  "Descubre qué especialidad de Ingeniería en Sistemas Computacionales va contigo con un test RIASEC y A.N.A, la orientadora virtual del TecNM campus Mérida.";
+
+// La imagen para compartir sale de app/opengraph-image.png (Next la agrega sola a og:image y twitter:image)
 export const metadata: Metadata = {
-  title: "CorePath",
-  description: "Asistente Virtual Vocacional para el Instituto Tecnologico de Mérida",
-  icons: {
-    icon: '/images/favicon.ico'
-  }
+  metadataBase: new URL("https://www.corepath.com.mx"),
+  title: { default: "CorePath · Asistente vocacional", template: "%s · CorePath" },
+  description: DESCRIPCION,
+  applicationName: "CorePath",
+  icons: { icon: "/images/favicon.ico" },
+  openGraph: {
+    type: "website",
+    locale: "es_MX",
+    url: "/",
+    siteName: "CorePath",
+    title: "CorePath · Tu futuro no debe ser al azar",
+    description: DESCRIPCION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CorePath · Tu futuro no debe ser al azar",
+    description: DESCRIPCION,
+  },
 };
 
 const THEME_SCRIPT = `try{var t=localStorage.getItem("theme");var d=t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.dataset.theme=d?"dark":"light";document.documentElement.style.colorScheme=d?"dark":"light"}catch(e){}`;

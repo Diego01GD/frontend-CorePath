@@ -6,17 +6,17 @@ const Logotipo = () => {
     <Link href="/">
       <div className="flex items-center gap-4">
         <Image
-            src="/images/favicon.ico"
+            src="/images/Logo_Tec.svg"
             width={70}
             height={70}
             alt="Instituto Tecnologico de Merida"
             loading="eager"
-            className="h-[70px] w-[70px]"
+            className="h-17.5 w-17.5"
           />
   
           <div className=" flex flex-col gap-1 font-textos font-semibold text-base flex-wrap md:text-xl md:flex-row">
-            <p>Asistente</p> 
-            <p>vocacional</p>
+            <p>CorePath:</p> 
+            <p>Asistente vocacional</p>
           </div>
       </div>
     </Link>

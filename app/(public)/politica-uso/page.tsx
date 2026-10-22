@@ -1,14 +1,10 @@
-import Link from "next/link";
-import { MoveLeft } from "lucide-react"
 import EntranceAnimation from "../../components/entrance-animation";
+import EnlaceRegresar from "../../components/enlace-regresar";
 
 export default function UsagePolicyPage() {
   return (
     <main className="mx-auto min-h-[calc(100vh-5rem)] max-w-3xl px-6 py-12">
-      <Link href="/login" className="text-sm flex gap-1 font-bold text-primary">
-        <MoveLeft />
-        <p className="hover:pl-2 hover:border-b-2 transition-all ease-in">Volver</p>
-      </Link>
+      <EnlaceRegresar href="/login">Volver</EnlaceRegresar>
       <EntranceAnimation className="mt-8 max-w-none leading-7 text-ctext/80 [&_h1]:font-titulos [&_h1]:text-4xl [&_h1]:font-bold [&_h1]:leading-tight [&_h2]:mt-10 [&_h2]:font-titulos [&_h2]:text-2xl [&_h2]:font-bold [&_p]:my-5">
         <h1 className="font-titulos">Términos y Condiciones de Uso</h1>
 

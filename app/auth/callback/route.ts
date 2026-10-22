@@ -18,9 +18,15 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(url);
   };
 
-  // Microsoft/Supabase devuelve ?error=... si el usuario cancela o el hook rechaza el correo
-  const err = searchParams.get("error_description") ?? searchParams.get("error");
-  if (err) return error(/institucional|403|signup/i.test(err) ? "dominio" : "cancelado");
+  // Supabase/Microsoft devuelven ?error=...&error_code=...&error_description=... cuando algo falla antes de llegar aquí
+  const err = searchParams.get("error");
+  if (err) {
+    const codigo = searchParams.get("error_code") ?? "";
+    const detalle = searchParams.get("error_description") ?? "";
+    if (/otp_expired|flow_state/i.test(codigo) || /expired|invalid/i.test(detalle)) return error("enlace");
+    if (/institucional|signup|hook/i.test(`${codigo} ${detalle}`)) return error("dominio");
+    return error("cancelado");
+  }
 
   const supabase = await createClient();
   const code = searchParams.get("code");

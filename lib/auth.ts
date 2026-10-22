@@ -10,4 +10,4 @@ export function correoPermitido(email: unknown): boolean {
 
 export const DOMINIO_PRINCIPAL = DOMINIOS[0];
 
-export const RUTAS_PROTEGIDAS = ["/comenzar", "/test", "/chat"];
+export const RUTAS_PROTEGIDAS = ["/comenzar", "/test", "/chat", "/resultados"];
