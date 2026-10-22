@@ -1,10 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, List, MessageCircle } from "lucide-react";
+import { List, MessageCircle } from "lucide-react";
 import EntranceAnimation from "../../components/entrance-animation";
 
-const pasos = ["Responde", "Recibe tu recomendación", "Consulta a Kiara"];
-const temas = ["Ciberseguridad", "Desarrollo Web y Móvil", "Inteligencia Artificial", "Redes"];
+const temas = ["Ciberseguridad", "Desarrollo Web y Móvil", "Inteligencia Artificial"];
 
 export default function ComenzarPage() {
   return (
@@ -19,7 +18,7 @@ export default function ComenzarPage() {
             priority
             className="h-auto w-40 sm:w-52 lg:w-64"
           />
-          <p className="mt-6 font-titulos text-xl font-bold text-accent">Kiara</p>
+          <p className="mt-6 font-titulos text-xl font-bold text-accent">A.N.A</p>
           <p className="text-sm text-ctext/70">Tu orientadora vocacional</p>
         </EntranceAnimation>
 
@@ -46,19 +45,6 @@ export default function ComenzarPage() {
               Responde preguntas sobre tus intereses y actividades preferidas. Al terminar
               recibirás una recomendación de especialidad y tu perfil de intereses.
             </p>
-            <ol className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-ctext/70">
-              {pasos.map((paso, i) => (
-                <li key={paso} className="flex items-center gap-3">
-                  <span className="flex items-center gap-2">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/15 font-titulos text-xs font-bold text-primary">
-                      {i + 1}
-                    </span>
-                    {paso}
-                  </span>
-                  {i < pasos.length - 1 && <ArrowRight size={16} className="hidden sm:block" aria-hidden="true" />}
-                </li>
-              ))}
-            </ol>
             <Link href="/test" className="btn btn-primary mt-5">
               Comenzar el test
             </Link>
@@ -69,10 +55,10 @@ export default function ComenzarPage() {
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent/15 text-accent">
                 <MessageCircle aria-hidden="true" />
               </span>
-              <h2 className="font-titulos text-xl font-bold">Chatea con Kiara</h2>
+              <h2 className="font-titulos text-xl font-bold">Chatea con A.N.A</h2>
             </div>
             <p className="mt-4 text-sm leading-6 text-ctext/80">
-              ¿Tienes dudas sobre una especialidad, las materias o el campo laboral? Kiara
+              ¿Tienes dudas sobre una especialidad, las materias o el campo laboral? A.N.A
               responde tus preguntas en cualquier momento.
             </p>
             <ul className="mt-4 flex flex-wrap gap-2" aria-label="Temas">
@@ -89,7 +75,7 @@ export default function ComenzarPage() {
         </div>
       </div>
 
-      <footer className="mt-10 flex flex-wrap justify-center gap-x-10 gap-y-2 text-sm text-ctext/70 lg:ml-[40%]">
+      <footer className="mt-10 flex flex-wrap justify-center gap-x-10 gap-y-2 text-sm text-ctext/90 lg:m-auto lg:my-7 font-semibold">
         <a href="https://www.merida.tecnm.mx" target="_blank" rel="noreferrer" className="hover:text-primary">Sitio Institucional</a>
         <Link href="/politica-privacidad" className="hover:text-primary">Aviso de Privacidad</Link>
         <Link href="/politica-uso" className="hover:text-primary">Términos y Condiciones de Uso</Link>

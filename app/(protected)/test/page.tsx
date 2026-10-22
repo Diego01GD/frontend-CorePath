@@ -305,7 +305,12 @@ export default function TestPage() {
                     <span className="flex-1 font-semibold sm:flex-none">
                       {etiqueta}
                     </span>
-                    <span className="text-sm text-ctext-2 sm:font-light">
+                    {/* En móvil el número va en pastilla: la pregunta de control pide "marca el número 2" */}
+                    <span
+                      className={`flex size-7 items-center justify-center rounded-full text-sm font-semibold sm:size-auto sm:rounded-none sm:bg-transparent sm:font-light sm:text-ctext-2 ${
+                        activa ? "bg-primary text-cards" : "bg-primary/10 text-ctext"
+                      }`}
+                    >
                       {valor}
                     </span>
                   </label>
@@ -327,7 +332,7 @@ export default function TestPage() {
             type="button"
             onClick={() => setIndice(indice - 1)}
             disabled={indice === 0}
-            className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl border border-primary bg-cards font-semibold text-primary disabled:opacity-40 lg:h-7.5 lg:flex-none lg:border-0 lg:bg-transparent"
+            className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl border border-primary bg-cards font-semibold text-primary transition-colors enabled:cursor-pointer enabled:hover:bg-primary/10 disabled:opacity-40 lg:-ml-4 lg:flex-none lg:rounded-full lg:border-0 lg:bg-transparent lg:pl-2 lg:pr-5"
           >
             <Image
               src="/images/test/chevron-izquierda.svg"
@@ -351,7 +356,7 @@ export default function TestPage() {
             type="button"
             onClick={siguiente}
             disabled={seleccion === undefined || enviando}
-            className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-primary font-semibold text-cards disabled:opacity-40 lg:h-7.5 lg:flex-none lg:bg-transparent lg:text-primary"
+            className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-primary font-semibold text-cards transition-colors enabled:cursor-pointer enabled:hover:bg-primary-h disabled:opacity-40 lg:-mr-4 lg:flex-none lg:rounded-full lg:bg-transparent lg:pl-5 lg:pr-2 lg:text-primary lg:enabled:hover:bg-primary/10"
           >
             {etiquetaSiguiente}
             <Image

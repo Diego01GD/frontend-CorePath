@@ -109,6 +109,12 @@ export default function Home() {
           </motion.div>
         </section>
       </main>
+
+      <footer className="mt-10 flex flex-wrap justify-center gap-x-10 gap-y-4 text-sm text-ctext/90 font-semibold lg:m-auto lg:my-7">
+        <a href="https://www.merida.tecnm.mx" target="_blank" rel="noreferrer" className="hover:text-primary">Sitio Institucional</a>
+        <Link href="/politica-privacidad" className="hover:text-primary">Aviso de Privacidad</Link>
+        <Link href="/politica-uso" className="hover:text-primary">Términos y Condiciones de Uso</Link>
+      </footer>
     </div>
   );
 }
