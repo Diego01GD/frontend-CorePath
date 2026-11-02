@@ -1,5 +1,5 @@
 import { createClient } from "./supabase/client";
-import type { Area } from "./api";
+import type { Area, InformeIA } from "./api";
 
 // Lectura directa de Supabase: la política RLS "ver mis resultados" solo devuelve los del usuario de la sesión
 export type Resultado = {
@@ -15,9 +15,10 @@ export type Resultado = {
     interes: Record<string, number>;
     congruencia: Record<string, number>;
   };
+  informe_ia: InformeIA | null; // comentario de A.N.A ya generado (lo guarda el backend)
 };
 
-const COLUMNAS = "id_resultado, creado_en, codigo_riasec, especialidad, tipo_resultado, nivel_congruencia, perfil_plano, puntajes";
+const COLUMNAS = "id_resultado, creado_en, codigo_riasec, especialidad, tipo_resultado, nivel_congruencia, perfil_plano, puntajes, informe_ia";
 
 // El catálogo de especialidades no es legible para el navegador; estos datos son fijos y públicos
 export const ESPECIALIDADES: Record<string, { nombre: string; area: Area; color: string; riasec: string }> = {

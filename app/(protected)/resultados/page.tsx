@@ -24,7 +24,7 @@ export default function ResultadosPage() {
     try {
       const [{ descargarInforme }, ia, { data }] = await Promise.all([
         import("@/lib/informe-pdf"),
-        api.informe(r.id_resultado).catch(() => null), // si A.N.A no está disponible, el PDF sale sin su comentario
+        r.informe_ia ?? api.informe(r.id_resultado).catch(() => null), // si A.N.A no está disponible, el PDF sale sin su comentario
         createClient().auth.getSession(),
       ]);
       await descargarInforme(r, ia, data.session?.user.email ?? "");

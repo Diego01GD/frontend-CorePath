@@ -15,11 +15,6 @@ export default function InformePage() {
   const [ia, setIa] = useState<InformeIA | null>(null);
   const [errorIa, setErrorIa] = useState("");
 
-  useEffect(() => {
-    obtenerResultado(id).then(setResultado, () => setResultado(null));
-    createClient().auth.getSession().then(({ data }) => setCorreo(data.session?.user.email ?? ""));
-  }, [id]);
-
   const pedirComentario = useCallback(
     () =>
       api.informe(id).then(setIa, (e) => {
@@ -34,8 +29,14 @@ export default function InformePage() {
   );
 
   useEffect(() => {
-    pedirComentario();
-  }, [pedirComentario]);
+    obtenerResultado(id).then((r) => {
+      setResultado(r);
+      // Si el comentario ya está guardado no se llama al backend: funciona aunque el modelo esté apagado
+      if (r?.informe_ia) setIa(r.informe_ia);
+      else if (r) pedirComentario();
+    }, () => setResultado(null));
+    createClient().auth.getSession().then(({ data }) => setCorreo(data.session?.user.email ?? ""));
+  }, [id, pedirComentario]);
 
   const [generando, setGenerando] = useState(false);
   const descargar = async () => {
