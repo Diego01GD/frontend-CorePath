@@ -24,7 +24,7 @@ const ThemeControl = () => {
   return (
     <button
       type="button"
-      className="relative flex h-10 w-10 items-center justify-center overflow-hidden"
+      className="relative flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden"
       title="Cambiar tema"
       aria-label="Cambiar entre tema claro y oscuro"
       aria-pressed={isDark}

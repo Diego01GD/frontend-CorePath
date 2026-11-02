@@ -62,31 +62,34 @@
   --font-sans: var(--font-textos);
 }
 
-[data-theme="dark"] {
-    --cards: #202229;
-    --background: #16171c;
-    --ctext: #f4f1ec;
-    --surfaces: #f4f4f5;
-    --primary: #e0185a;
-    --primary-h: #b30c44;
-    --primary-l: #ff6b93;
-    --accent: #e3b47c;
-    --bordes-s: #8c7764;
-    --success: #4e7d2a;
-    --error: #b42318;
-    --cib: #7c3aed;
-    --web: #b45309;
-    --ia: #0e7490;
-    --panel: #26282f;
-    --ctext-2: #b9ada2;
-    --pista: #3a3c44;
-    /* Versiones más claras: los tonos 500–600 no contrastan sobre el fondo oscuro */
-    --dim-r: #34d399;
-    --dim-i: #60a5fa;
-    --dim-a: #a78bfa;
-    --dim-s: #fb923c;
-    --dim-e: #fb7185;
-    --dim-c: #94a3b8;
+/* Solo en pantalla: al imprimir (PDF del informe) se usan siempre los tokens claros de :root */
+@media screen {
+  [data-theme="dark"] {
+      --cards: #202229;
+      --background: #16171c;
+      --ctext: #f4f1ec;
+      --surfaces: #f4f4f5;
+      --primary: #e0185a;
+      --primary-h: #b30c44;
+      --primary-l: #ff6b93;
+      --accent: #e3b47c;
+      --bordes-s: #8c7764;
+      --success: #4e7d2a;
+      --error: #b42318;
+      --cib: #7c3aed;
+      --web: #b45309;
+      --ia: #0e7490;
+      --panel: #26282f;
+      --ctext-2: #b9ada2;
+      --pista: #3a3c44;
+      /* Versiones más claras: los tonos 500–600 no contrastan sobre el fondo oscuro */
+      --dim-r: #34d399;
+      --dim-i: #60a5fa;
+      --dim-a: #a78bfa;
+      --dim-s: #fb923c;
+      --dim-e: #fb7185;
+      --dim-c: #94a3b8;
+  }
 }
 
 /* Los temas de daisyUI definen su propio --color-primary (morado); se reemplaza por la paleta del proyecto */
@@ -714,3 +717,19 @@ body {
       display: none;
     }
   }
+
+/* Impresión / PDF del informe: A4 y con fondos impresos (los colores claros vienen de :root) */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+  html,
+  body {
+    /* el script del tema pone color-scheme: dark en <html>; Chrome pinta así los márgenes de la hoja */
+    color-scheme: light !important;
+    background: #fff !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

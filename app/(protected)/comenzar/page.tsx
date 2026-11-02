@@ -3,6 +3,12 @@ import Image from "next/image";
 import { List, MessageCircle } from "lucide-react";
 import EntranceAnimation from "../../components/entrance-animation";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "¿Por dónde empiezas?",
+};
+
 const temas = ["Ciberseguridad", "Desarrollo Web y Móvil", "Inteligencia Artificial"];
 
 export default function ComenzarPage() {
@@ -75,7 +81,7 @@ export default function ComenzarPage() {
         </div>
       </div>
 
-      <footer className="mt-10 flex flex-wrap justify-center gap-x-10 gap-y-2 text-sm text-ctext/90 lg:m-auto lg:my-7 font-semibold">
+      <footer className="mt-auto flex flex-wrap justify-center gap-x-10 gap-y-2 pt-16 pb-2 text-sm font-semibold text-ctext/90">
         <a href="https://www.merida.tecnm.mx" target="_blank" rel="noreferrer" className="hover:text-primary">Sitio Institucional</a>
         <Link href="/politica-privacidad" className="hover:text-primary">Aviso de Privacidad</Link>
         <Link href="/politica-uso" className="hover:text-primary">Términos y Condiciones de Uso</Link>

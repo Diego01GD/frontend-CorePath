@@ -25,7 +25,7 @@ export default function FaqPage() {
           return (
             <div key={question} className={`overflow-hidden rounded-2xl border bg-cards transition-all duration-200 ${isOpen ? "border-primary shadow-lg shadow-primary/10" : "border-bordes-s/40"}`}>
               <button
-                className="flex w-full items-center justify-between gap-4 p-5 text-left font-bold transition-colors hover:text-primary md:p-6"
+                className="flex w-full cursor-pointer items-center justify-between gap-4 p-5 text-left font-bold transition-colors hover:text-primary md:p-6"
                 aria-expanded={isOpen}
                 aria-controls={`faq-answer-${index}`}
                 onClick={() => setActiveIndex(isOpen ? null : index)}

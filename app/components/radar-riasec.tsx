@@ -82,7 +82,13 @@ export default function RadarRiasec({ dimensiones }: { dimensiones: Record<strin
             ticks: { stepSize: 1, color: () => t.texto2, backdropColor: "transparent", font: { size: 11 } },
             grid: { color: () => t.rejilla },
             angleLines: { color: () => t.rejilla },
-            pointLabels: { color: (c) => t.dims[c.index], font: { size: 13, weight: 700, family: t.fuente } },
+            // Letra más chica en pantallas angostas: Chart.js encoge el radar para que las etiquetas quepan
+            pointLabels: {
+              color: (c) => t.dims[c.index],
+              font: (c) => ({ size: c.chart.width < 360 ? 10 : 13, weight: 700, family: t.fuente }),
+              // En lienzos angostos sin "(R)": el color ya identifica la dimensión y así caben los nombres largos
+              callback: (etiqueta: string) => ((lienzo.current?.clientWidth ?? 400) < 320 ? etiqueta.replace(/ \(.\)$/, "") : etiqueta),
+            },
           },
         },
       },
@@ -93,8 +99,17 @@ export default function RadarRiasec({ dimensiones }: { dimensiones: Record<strin
       grafica.update("none");
     });
     observador.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    // Al imprimir, el CSS fuerza los tokens claros: se releen antes y se restauran después
+    const repintar = () => {
+      t = tokens();
+      grafica.update("none");
+    };
+    addEventListener("beforeprint", repintar);
+    addEventListener("afterprint", repintar);
 
     return () => {
+      removeEventListener("beforeprint", repintar);
+      removeEventListener("afterprint", repintar);
       observador.disconnect();
       grafica.destroy();
     };

@@ -72,12 +72,24 @@ export type RespuestaChat = {
   timestamp: string;
 };
 
+export type InformeIA = {
+  resumen: string;
+  fortalezas: string[];
+  a_explorar: string[];
+  siguientes_pasos: string[];
+  generado_en: string;
+};
+
 export const api = {
   itemsTest: (version?: string) =>
     apiFetch<TestItems>(`/api/test/items${version ? `?version=${encodeURIComponent(version)}` : ""}`),
 
   enviarTest: (id_version: string, respuestas: Record<string, number>) =>
     apiFetch<ResultadoTest>("/api/test", { method: "POST", body: JSON.stringify({ id_version, respuestas }) }),
+
+  // La primera vez el modelo tarda ~30 s; después se reutiliza el comentario guardado
+  informe: (idResultado: string) =>
+    apiFetch<InformeIA>(`/api/test/resultados/${encodeURIComponent(idResultado)}/informe`, { method: "POST" }),
 
   // El backend acepta máximo 20 mensajes de historial y 1000 caracteres por pregunta
   chat: (mensaje: string, area: Area, historial: Mensaje[] = []) =>

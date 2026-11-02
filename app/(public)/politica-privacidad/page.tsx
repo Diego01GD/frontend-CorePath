@@ -1,10 +1,18 @@
 import EntranceAnimation from "../../components/entrance-animation";
 import EnlaceRegresar from "../../components/enlace-regresar";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Aviso de privacidad",
+  description:
+    "Cómo CorePath trata tus datos personales y tus resultados del test vocacional, y cómo ejercer tus derechos ARCO.",
+};
+
 export default function PrivacyPolicyPage() {
   return (
     <main className="mx-auto min-h-[calc(100vh-5rem)] max-w-3xl px-6 py-12">
-      <EnlaceRegresar href="/login">Volver</EnlaceRegresar>
+      <EnlaceRegresar href="/" volver>Volver</EnlaceRegresar>
       <EntranceAnimation className="mt-8 max-w-none leading-7 text-ctext/80 [&_h1]:font-titulos [&_h1]:text-4xl [&_h1]:font-bold [&_h1]:leading-tight [&_h2]:mt-10 [&_h2]:font-titulos [&_h2]:text-2xl [&_h2]:font-bold [&_li]:ml-6 [&_li]:pl-2 [&_ol]:my-5 [&_p]:my-5">
         <p className="text-sm font-bold uppercase tracking-[0.2em] text-primary">
           Aviso de privacidad

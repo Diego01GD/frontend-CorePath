@@ -5,6 +5,10 @@ import Logotipo from "../components/logo";
 import AccionesSesion from "../components/acciones-sesion";
 import { correoPermitido } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import type { Metadata } from "next";
+
+// Vistas con sesión y datos personales: fuera de los buscadores (además del disallow en robots.ts)
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 // Segunda barrera tras el proxy: verifica la sesión en el servidor antes de mostrar la página
 async function RequiereSesion({ children }: { children: React.ReactNode }) {
@@ -21,8 +25,8 @@ export default function ProtectedLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <>
-      <header className="w-full bg-cards p-4">
-        <div className="m-auto flex max-w-7xl items-center justify-between gap-4">
+      <header className="w-full bg-cards p-4 print:hidden">
+        <div className="m-auto flex max-w-7xl min-w-0 items-center justify-between gap-3">
           <Logotipo />
           {/* usePathname es dato de la petición en rutas dinámicas (/resultados/[id]) */}
           <Suspense fallback={<span className="size-11" aria-hidden="true" />}>

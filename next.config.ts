@@ -11,14 +11,17 @@ const origen = (url?: string) => {
 
 // CSP: el navegador solo habla con este sitio, Supabase y el backend. 'unsafe-inline' es necesario
 // para el script del tema y los scripts de Next sin nonces (los nonces obligarían a render dinámico).
-// shortcut: al agregar Rive, sumar 'wasm-unsafe-eval' a script-src y su CDN a connect-src
+// shortcut: al agregar Rive, sumar su CDN a connect-src
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${dev ? " 'unsafe-eval'" : ""}`,
+  // 'wasm-unsafe-eval': el motor de diseño de @react-pdf (yoga) es WebAssembly; no habilita eval() de JavaScript
+  `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'${dev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self'",
-  `connect-src 'self' ${origen(process.env.NEXT_PUBLIC_SUPABASE_URL)} ${origen(process.env.NEXT_PUBLIC_API_URL)}${dev ? " ws:" : ""}`,
+  // data: = módulo WebAssembly de @react-pdf incrustado (local, no sale a la red)
+  `connect-src 'self' data: ${origen(process.env.NEXT_PUBLIC_SUPABASE_URL)} ${origen(process.env.NEXT_PUBLIC_API_URL)}${dev ? " ws:" : ""}`,
+  "worker-src 'self' blob:", // @react-pdf genera el PDF en un worker creado desde blob:
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",

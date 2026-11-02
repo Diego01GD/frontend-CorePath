@@ -1,6 +1,13 @@
 import Link from "next/link";
 import EntranceAnimation from "../../../components/entrance-animation";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Sesión iniciada",
+  robots: { index: false, follow: false },
+};
+
 export default function LoginSuccessPage() {
   return (
     <main className="flex min-h-[calc(100vh-5rem)] items-center justify-center px-6 py-12">

@@ -40,6 +40,16 @@ export const metadata: Metadata = {
 
 const THEME_SCRIPT = `try{var t=localStorage.getItem("theme");var d=t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.dataset.theme=d?"dark":"light";document.documentElement.style.colorScheme=d?"dark":"light"}catch(e){}`;
 
+const SITIO_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "CorePath",
+  alternateName: "CorePath, asistente vocacional del TecNM Mérida",
+  url: "https://www.corepath.com.mx",
+  inLanguage: "es-MX",
+  publisher: { "@type": "CollegeOrUniversity", name: "Instituto Tecnológico de Mérida", url: "https://www.merida.tecnm.mx" },
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -50,6 +60,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         {/* Aplica el tema antes del primer pintado para evitar el parpadeo claro; misma lógica que ThemeControl */}
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        {/* Datos estructurados: Google usa WebSite para mostrar "CorePath" como nombre del sitio en los resultados */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SITIO_JSONLD) }} />
       </head>
       <body className="min-h-full flex flex-col font-textos">{children}</body>
     </html>

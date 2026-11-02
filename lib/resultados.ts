@@ -20,10 +20,10 @@ export type Resultado = {
 const COLUMNAS = "id_resultado, creado_en, codigo_riasec, especialidad, tipo_resultado, nivel_congruencia, perfil_plano, puntajes";
 
 // El catálogo de especialidades no es legible para el navegador; estos datos son fijos y públicos
-export const ESPECIALIDADES: Record<string, { nombre: string; area: Area; color: string }> = {
-  CIB: { nombre: "Ciberseguridad", area: "ciberseguridad", color: "var(--cib)" },
-  WEB: { nombre: "Desarrollo Web y Móvil", area: "desarrollo", color: "var(--web)" },
-  IA: { nombre: "Inteligencia Artificial", area: "ia", color: "var(--ia)" },
+export const ESPECIALIDADES: Record<string, { nombre: string; area: Area; color: string; riasec: string }> = {
+  CIB: { nombre: "Ciberseguridad", area: "ciberseguridad", color: "var(--cib)", riasec: "ICR" },
+  WEB: { nombre: "Desarrollo Web y Móvil", area: "desarrollo", color: "var(--web)", riasec: "IRA" },
+  IA: { nombre: "Inteligencia Artificial", area: "ia", color: "var(--ia)", riasec: "IRS" },
 };
 
 // Las llaves de puntajes.interes son los nombres del catálogo del backend
@@ -66,6 +66,29 @@ export async function obtenerResultado(id: string): Promise<Resultado | null> {
   if (error) throw error;
   return data as Resultado | null;
 }
+
+// Qué mide cada dimensión del modelo de Holland, en palabras del estudiante
+export const DESCRIPCION_DIMENSION: Record<string, string> = {
+  R: "Trabajar con herramientas, equipos y sistemas concretos; resolver problemas prácticos con las manos.",
+  I: "Analizar, investigar y resolver problemas complejos con lógica y datos.",
+  A: "Crear, diseñar y expresar ideas de forma original.",
+  S: "Ayudar, enseñar y colaborar con otras personas.",
+  E: "Liderar, persuadir, tomar decisiones e impulsar proyectos.",
+  C: "Organizar información, seguir procedimientos y cuidar el orden y la precisión.",
+};
+
+// Copia de parametros_calificacion en Supabase (el navegador no puede leer esa tabla). Si se cambian allá, actualizar aquí.
+export const UMBRALES = { congruenciaAlta: 13, congruenciaMedia: 8, interesAlto: 3.5, planoMax: 3.0, planoRango: 0.5 };
+
+export const nivel = (v: number) => (v >= 3.5 ? "alto" : v >= 2.5 ? "medio" : "bajo");
+
+export const EXPLICACION: Record<Resultado["tipo_resultado"], string> = {
+  Recomendada: "Tus intereses apuntan con claridad a esta especialidad y tu perfil RIASEC coincide con ella.",
+  "Recomendada con nota":
+    "Es el área que más te interesa, aunque tu perfil RIASEC coincide solo en parte. Vale la pena explorarla con A.N.A antes de decidir.",
+  "Sin afinidad clara":
+    "Tus respuestas no muestran una preferencia marcada por una sola especialidad. Conversa con A.N.A para conocer mejor las tres.",
+};
 
 export const formatoFecha = (iso: string | Date) =>
   new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", year: "numeric" }).format(new Date(iso));

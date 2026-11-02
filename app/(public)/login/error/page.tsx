@@ -3,6 +3,13 @@ import { Suspense } from "react";
 import MotivoError from "./motivo-error";
 import EntranceAnimation from "../../../components/entrance-animation";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "No pudimos iniciar tu sesión",
+  robots: { index: false, follow: false },
+};
+
 export default function LoginErrorPage() {
   return (
     <main className="flex min-h-[calc(100vh-5rem)] items-center justify-center px-6 py-12">

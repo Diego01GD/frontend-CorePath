@@ -2,20 +2,39 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Clock3 } from "lucide-react";
+import { Clock3, Download } from "lucide-react";
 import { ESPECIALIDADES, formatoFecha, listarResultados, type Resultado } from "@/lib/resultados";
 import { DIAS_RETENCION, diasRestantes } from "@/lib/retencion";
+import { api } from "@/lib/api";
+import { createClient } from "@/lib/supabase/client";
 
 export default function ResultadosPage() {
   const [resultados, setResultados] = useState<Resultado[] | null>(null);
   const [error, setError] = useState(false);
 
+  const [descargando, setDescargando] = useState<string | null>(null);
+
   useEffect(() => {
     listarResultados().then(setResultados, () => setError(true));
   }, []);
 
+  // Mismo informe que la vista: plantilla PDF llenada con este resultado (el comentario de A.N.A se pide o reutiliza)
+  const descargar = async (r: Resultado) => {
+    setDescargando(r.id_resultado);
+    try {
+      const [{ descargarInforme }, ia, { data }] = await Promise.all([
+        import("@/lib/informe-pdf"),
+        api.informe(r.id_resultado).catch(() => null), // si A.N.A no está disponible, el PDF sale sin su comentario
+        createClient().auth.getSession(),
+      ]);
+      await descargarInforme(r, ia, data.session?.user.email ?? "");
+    } finally {
+      setDescargando(null);
+    }
+  };
+
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-10 sm:px-6 lg:py-14">
+    <main className="mx-auto w-full max-w-3xl flex-1 px-5 py-10 sm:px-6 lg:py-14">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <h1 className="font-titulos text-4xl font-bold sm:text-5xl">Mis resultados</h1>
         <Link href="/test" className="btn btn-primary">Hacer el test</Link>
@@ -52,13 +71,13 @@ export default function ResultadosPage() {
               const esp = r.especialidad ? ESPECIALIDADES[r.especialidad] : null;
               return (
                 <li key={r.id_resultado}>
-                  <Link
-                    href={`/resultados/${r.id_resultado}`}
-                    className="group block rounded-2xl border border-bordes-s/40 bg-cards p-5 transition-colors hover:border-primary focus-visible:border-primary sm:p-6"
-                  >
+                  {/* Toda la tarjeta abre el resultado (enlace del título estirado); "Descargar informe" va encima, sin anidar enlaces */}
+                  <article className="group relative rounded-2xl border border-bordes-s/40 bg-cards p-5 transition-colors hover:border-primary has-[a:focus-visible]:border-primary sm:p-6">
                     <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                       <h2 className="font-titulos text-2xl font-semibold group-hover:text-primary">
-                        {esp?.nombre ?? "Sin afinidad clara"}
+                        <Link href={`/resultados/${r.id_resultado}`} className="after:absolute after:inset-0 after:rounded-2xl focus-visible:outline-none">
+                          {esp?.nombre ?? "Sin afinidad clara"}
+                        </Link>
                       </h2>
                       <time dateTime={r.creado_en} className="text-sm text-ctext-2">{formatoFecha(r.creado_en)}</time>
                     </div>
@@ -85,7 +104,22 @@ export default function ResultadosPage() {
                         {dias === 0 ? "Se borra hoy" : `Se borra en ${dias} ${dias === 1 ? "día" : "días"}`}
                       </span>
                     </div>
-                  </Link>
+
+                    <button
+                      type="button"
+                      onClick={() => descargar(r)}
+                      disabled={descargando !== null}
+                      aria-label={`Descargar informe del test del ${formatoFecha(r.creado_en)}`}
+                      className="relative z-10 mt-4 -mx-3 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-semibold text-primary transition-colors enabled:cursor-pointer enabled:hover:bg-primary/10 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-primary"
+                    >
+                      {descargando === r.id_resultado ? (
+                        <span className="loading loading-spinner loading-xs" aria-hidden="true" />
+                      ) : (
+                        <Download size={16} aria-hidden="true" />
+                      )}
+                      {descargando === r.id_resultado ? "Preparando…" : "Descargar informe"}
+                    </button>
+                  </article>
                 </li>
               );
             })}
