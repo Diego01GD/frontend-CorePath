@@ -1,9 +1,9 @@
-import type { EmailOtpType } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
 import { correoPermitido } from "@/lib/auth";
+import { COOKIE_CONSENTIMIENTO, VERSION_AVISOS } from "@/lib/consentimiento";
 import { createClient } from "@/lib/supabase/server";
 
-// Destino de Microsoft (vía Supabase) y del enlace por correo. Crea la sesión y redirige.
+// Destino del inicio de sesión con Microsoft (vía Supabase). Crea la sesión y redirige.
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const destino = (ruta: string) => {
@@ -30,14 +30,7 @@ export async function GET(request: NextRequest) {
 
   const supabase = await createClient();
   const code = searchParams.get("code");
-  const tokenHash = searchParams.get("token_hash");
-  const type = searchParams.get("type") as EmailOtpType | null;
-
-  const { error: fallo } = code
-    ? await supabase.auth.exchangeCodeForSession(code)
-    : tokenHash && type
-      ? await supabase.auth.verifyOtp({ token_hash: tokenHash, type })
-      : { error: new Error("sin código") };
+  const { error: fallo } = code ? await supabase.auth.exchangeCodeForSession(code) : { error: new Error("sin código") };
   if (fallo) return error("enlace");
 
   const { data } = await supabase.auth.getClaims();
@@ -45,5 +38,18 @@ export async function GET(request: NextRequest) {
     await supabase.auth.signOut();
     return error("dominio");
   }
-  return NextResponse.redirect(destino("/comenzar"));
+
+  // Sin aceptación registrada de la versión vigente no hay sesión: se acepta en /login, en este mismo navegador
+  const aceptoAhora = request.cookies.get(COOKIE_CONSENTIMIENTO)?.value === VERSION_AVISOS;
+  const { error: sinRegistro } = aceptoAhora
+    ? await supabase.rpc("registrar_consentimiento", { p_version: VERSION_AVISOS })
+    : await supabase.from("consentimientos").select("id_usuario").eq("version_avisos", VERSION_AVISOS).single();
+  if (sinRegistro) {
+    await supabase.auth.signOut();
+    return error("consentimiento");
+  }
+
+  const respuesta = NextResponse.redirect(destino("/comenzar"));
+  respuesta.cookies.delete(COOKIE_CONSENTIMIENTO);
+  return respuesta;
 }

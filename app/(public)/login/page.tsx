@@ -2,47 +2,37 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { FormEvent, useState } from "react";
+import { useEffect, useState } from "react";
 import EntranceAnimation from "../../components/entrance-animation";
-import { correoPermitido, DOMINIO_PRINCIPAL } from "@/lib/auth";
+import { consentimientoPrevio, marcarConsentimiento } from "@/lib/consentimiento";
 import { createClient } from "@/lib/supabase/client";
 
-const redirectTo = () => `${window.location.origin}/auth/callback`;
-// Se activa con NEXT_PUBLIC_LOGIN_MICROSOFT=true cuando el proveedor Azure esté configurado en Supabase
-const MICROSOFT_ACTIVO = process.env.NEXT_PUBLIC_LOGIN_MICROSOFT === "true";
 
 export default function LoginPage() {
   const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
   const [acceptedUsage, setAcceptedUsage] = useState(false);
   const acceptedPolicies = acceptedPrivacy && acceptedUsage;
-  const [email, setEmail] = useState("");
-  const [estado, setEstado] = useState<"idle" | "enviando" | "enviado" | "error">("idle");
+  const [redirigiendo, setRedirigiendo] = useState(false);
   const [mensaje, setMensaje] = useState("");
 
+  // Si ya aceptó la versión vigente en este navegador, las casillas aparecen marcadas (puede desmarcarlas)
+  useEffect(() => {
+    if (consentimientoPrevio()) queueMicrotask(() => { setAcceptedPrivacy(true); setAcceptedUsage(true); });
+  }, []);
+
+  // Único acceso: cuenta institucional de Microsoft (Azure / Entra ID) vía Supabase Auth
   const loginMicrosoft = async () => {
     setMensaje("");
+    setRedirigiendo(true);
+    marcarConsentimiento();
     const { error } = await createClient().auth.signInWithOAuth({
       provider: "azure",
-      options: { scopes: "email", redirectTo: redirectTo() },
+      options: { scopes: "email", redirectTo: `${window.location.origin}/auth/callback` },
     });
-    if (error) setMensaje("El inicio de sesión con Microsoft aún no está disponible. Usa el enlace por correo.");
-  };
-
-  // shortcut: acceso temporal por enlace al correo mientras TI autoriza la app de Microsoft; quitar este formulario después
-  const enviarEnlace = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!correoPermitido(email)) {
-      setEstado("error");
-      setMensaje(`Usa tu correo institucional @${DOMINIO_PRINCIPAL}.`);
-      return;
+    if (error) {
+      setRedirigiendo(false);
+      setMensaje("No se pudo abrir el inicio de sesión de Microsoft. Intenta de nuevo en unos minutos.");
     }
-    setEstado("enviando");
-    const { error } = await createClient().auth.signInWithOtp({
-      email: email.trim().toLowerCase(),
-      options: { emailRedirectTo: redirectTo() },
-    });
-    setEstado(error ? "error" : "enviado");
-    setMensaje(error ? "No se pudo enviar el enlace. Intenta de nuevo en unos minutos." : "Revisa tu correo y abre el enlace en este mismo navegador.");
   };
 
   return (
@@ -112,43 +102,20 @@ export default function LoginPage() {
 
             <button
               type="button"
-              disabled={!acceptedPolicies || !MICROSOFT_ACTIVO}
+              disabled={!acceptedPolicies || redirigiendo}
               onClick={loginMicrosoft}
               className="btn btn-primary mt-4 w-full"
             >
               <Image
                 src="/images/microsoft.svg"
-                alt="Microsoft"
+                alt=""
                 width={20}
                 height={20}
               />
-              {MICROSOFT_ACTIVO ? "Continuar con Microsoft" : "Microsoft (próximamente)"}
+              {redirigiendo ? "Abriendo Microsoft…" : "Continuar con Microsoft"}
             </button>
 
-            <form onSubmit={enviarEnlace} className="space-y-3 border-t border-bordes-s/20 pt-4">
-              <label htmlFor="correo" className="block text-sm font-bold">
-                O recibe un enlace de acceso en tu correo
-              </label>
-              <input
-                id="correo"
-                type="email"
-                required
-                autoComplete="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder={`usuario@${DOMINIO_PRINCIPAL}`}
-                className="input input-bordered w-full bg-background"
-              />
-              <button
-                type="submit"
-                disabled={!acceptedPolicies || estado === "enviando"}
-                className="btn btn-outline w-full border-primary text-primary hover:bg-primary hover:text-surfaces"
-              >
-                {estado === "enviando" ? "Enviando…" : "Enviarme el enlace"}
-              </button>
-            </form>
-
-            <p role="status" aria-live="polite" className={`min-h-5 text-sm ${estado === "error" ? "text-error" : "text-success"}`}>
+            <p role="status" aria-live="polite" className="min-h-5 text-sm text-error">
               {mensaje}
             </p>
           </div>

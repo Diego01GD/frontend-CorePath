@@ -74,7 +74,7 @@ Este repositorio contiene **solo el frontend**. La calificación del test, el ch
 | RF-01 | Mostrar una página de inicio que presente el asistente, sus pasos y el acceso al test y al chat. | ✅ |
 | RF-02 | Mostrar páginas informativas: **Nosotros** y **Preguntas frecuentes**. | ✅ |
 | RF-03 | Mostrar el **Aviso de privacidad** y la **Política de uso**. | ✅ (el contenido debe actualizarse: borrado a 30 días, datos que entrega Microsoft, responsable y correo ARCO) |
-| RF-04 | Permitir iniciar sesión **únicamente con cuenta institucional de Microsoft** (Azure / Entra ID vía Supabase Auth). | 🟡 Integrado; se activa con `NEXT_PUBLIC_LOGIN_MICROSOFT=true` cuando TI autorice la app. Mientras tanto: enlace de acceso por correo |
+| RF-04 | Permitir iniciar sesión **únicamente con cuenta institucional de Microsoft** (Azure / Entra ID vía Supabase Auth). | ✅ Único acceso; la aceptación de los avisos se registra en `consentimientos` |
 | RF-05 | Exigir la aceptación del aviso de privacidad y la política de uso antes de iniciar sesión. | 🟡 Se bloquea el botón; falta registrar la aceptación en la base de datos |
 | RF-06 | Informar el resultado del inicio de sesión: éxito o error (cuenta no autorizada, cancelado, falla del servidor). | ✅ `/auth/callback` crea la sesión; `/login/error?motivo=dominio\|enlace\|cancelado` |
 | RF-07 | Redirigir al usuario a `/comenzar` al iniciar sesión, donde elige entre el test y el chat. | ✅ |
@@ -194,7 +194,6 @@ NEXT_PUBLIC_SUPABASE_URL=https://TU-PROYECTO.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
 NEXT_PUBLIC_API_URL=http://127.0.0.1:8000        # o https://tu-dominio.ngrok-free.app
 NEXT_PUBLIC_DOMINIOS_CORREO=merida.tecnm.mx       # separados por coma
-NEXT_PUBLIC_LOGIN_MICROSOFT=false                 # true cuando Azure esté activo
 ```
 
 > ⚠️ Nunca pongas la llave `service_role` de Supabase en el frontend.

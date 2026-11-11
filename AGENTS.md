@@ -36,7 +36,7 @@ Asistente vocacional del Instituto Tecnológico de Mérida. Ver `README.md` para
 ### Contexto
 - Solo frontend. La calificación del test RIASEC, el chatbot (RAG + Ollama) y la base de datos (Supabase) están en el backend FastAPI; aquí no se replica esa lógica.
 - Contrato del backend (todos requieren `Authorization: Bearer <token de Supabase>`): `GET /api/test/items`, `POST /api/test` y `POST /api/chat` (`mensaje` ≤ 500, `area` = `ciberseguridad` | `desarrollo` | `ia`, `historial` ≤ 20 con `role` = `user` | `assistant`). Llamarlos solo con `lib/api.ts`.
-- Login: Microsoft (Azure / Entra ID) vía Supabase Auth, activado con `NEXT_PUBLIC_LOGIN_MICROSOFT`; mientras tanto, enlace por correo (temporal, marcado con `shortcut:` en `login/page.tsx`). Ambos vuelven a `/auth/callback`, que redirige a `/comenzar`.
+- Login: solo Microsoft (Azure / Entra ID) vía Supabase Auth. Vuelve a `/auth/callback`, que registra la aceptación de los avisos (`lib/consentimiento.ts`, tabla `consentimientos`) y redirige a `/comenzar`.
 - El detalle `/resultados/[id]` es provisional; `/test` y `/chat` ya siguen el diseño de Figma.
 
 ### Convenciones
