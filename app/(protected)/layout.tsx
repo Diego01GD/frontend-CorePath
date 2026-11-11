@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import Logotipo from "../components/logo";
 import AccionesSesion from "../components/acciones-sesion";
+import AvisoConexion from "../components/aviso-conexion";
 import { correoPermitido } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import type { Metadata } from "next";
@@ -34,6 +35,7 @@ export default function ProtectedLayout({
           </Suspense>
         </div>
       </header>
+      <AvisoConexion />
       {/* Con cacheComponents, leer la sesión debe ir dentro de Suspense; el encabezado sale en el shell estático */}
       <Suspense fallback={<div className="flex flex-1 items-center justify-center p-12"><span className="loading loading-spinner loading-lg text-primary" aria-label="Cargando" /></div>}>
         <RequiereSesion>{children}</RequiereSesion>

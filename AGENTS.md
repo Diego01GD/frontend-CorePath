@@ -35,9 +35,9 @@ Asistente vocacional del Instituto Tecnológico de Mérida. Ver `README.md` para
 
 ### Contexto
 - Solo frontend. La calificación del test RIASEC, el chatbot (RAG + Ollama) y la base de datos (Supabase) están en el backend FastAPI; aquí no se replica esa lógica.
-- Contrato del backend (todos requieren `Authorization: Bearer <token de Supabase>`): `GET /api/test/items`, `POST /api/test` y `POST /api/chat` (`mensaje` ≤ 1000, `area` = `ciberseguridad` | `desarrollo` | `ia`, `historial` ≤ 20 con `role` = `user` | `assistant`). Llamarlos solo con `lib/api.ts`.
+- Contrato del backend (todos requieren `Authorization: Bearer <token de Supabase>`): `GET /api/test/items`, `POST /api/test` y `POST /api/chat` (`mensaje` ≤ 500, `area` = `ciberseguridad` | `desarrollo` | `ia`, `historial` ≤ 20 con `role` = `user` | `assistant`). Llamarlos solo con `lib/api.ts`.
 - Login: Microsoft (Azure / Entra ID) vía Supabase Auth, activado con `NEXT_PUBLIC_LOGIN_MICROSOFT`; mientras tanto, enlace por correo (temporal, marcado con `shortcut:` en `login/page.tsx`). Ambos vuelven a `/auth/callback`, que redirige a `/comenzar`.
-- `/chat` y el detalle `/resultados/[id]` son provisionales; `/test` ya sigue el diseño de Figma.
+- El detalle `/resultados/[id]` es provisional; `/test` y `/chat` ya siguen el diseño de Figma.
 
 ### Convenciones
 - Todo el texto de la interfaz va en **español**.
@@ -47,10 +47,11 @@ Asistente vocacional del Instituto Tecnológico de Mérida. Ver `README.md` para
 - La CSP está en `next.config.ts`: un servicio externo nuevo (Rive, analíticas, otra API) debe agregarse a `connect-src`/`script-src` o el navegador lo bloqueará.
 - Componentes compartidos en `app/components/`, nombres de archivo en kebab-case.
 - Colores solo con los tokens de `globals.css` (`primary`, `accent`, `cards`, `ctext`, ...). Usar `primary/15` en lugar de `primary-l` para fondos suaves: en tema oscuro `primary-l` es un rosa intenso con poco contraste.
+- Estilos solo con utilidades de Tailwind: usar la escala (`size-42`, `rounded-sm`, `text-3xl`) o un token en `@theme` de `globals.css` (`--animate-*`, `--radius-*`, `--text-*`, `--color-*`). Nada de `style={{}}` ni valores sueltos como `text-[13px]` o `bg-[#hex]`; los corchetes solo para layout sin equivalente (`grid-cols-[…]`, `calc()`, porcentajes).
 - Los colores de daisyUI se reasignan a los tokens en `globals.css`; no quitar ese bloque o `btn-primary` vuelve a ser morado.
 - El tema lo aplica el script inline de `app/layout.tsx` antes del primer pintado; `ThemeControl` solo lo alterna. Mantener ambos sincronizados.
 - Animaciones de entrada con `EntranceAnimation` (respeta `prefers-reduced-motion`). Para animaciones continuas usar motion values de framer-motion, no `setState` en `requestAnimationFrame`.
-- La orientadora se llama **A.N.A**.
+- La orientadora se llama **A.N.A**. Su avatar es `AvatarAna` (estados: reposo, escuchando, pensando, hablando, error); hoy es una imagen con movimiento CSS y se reemplazará por la animación de Rive (`.riv` en `public/animaciones/`), conservando el tamaño del contenedor.
 - Informe completo: la plantilla del PDF es `lib/informe-pdf.tsx` (@react-pdf/renderer, fuentes TTF en `public/fonts/`, logo PNG en `public/images/logo-tec.png`); `descargarInforme()` la llena y descarga el archivo. Se importa con `import()` al pulsar el botón para no cargar la librería en la página. La vista `/resultados/[id]/informe` y el PDF comparten datos y textos en `lib/informe.ts`; solo el "Comentario de A.N.A" lo genera el modelo (`api.informe`, guardado en `resultados.informe_ia`). `UMBRALES` copia `parametros_calificacion`: si cambian en Supabase, actualizarlos aquí. La CSP permite `data:` en connect-src y `worker-src blob:` por @react-pdf.
 - El tema oscuro solo aplica en pantalla (`@media screen` en `globals.css`): al imprimir siempre se usan los tokens claros.
 - SEO: títulos con plantilla `%s · CorePath` (en páginas de cliente, el título va en un `layout.tsx` hermano; un layout con subpáginas debe repetir `template`). Rutas protegidas con `noindex` y bloqueadas en `app/robots.ts`; páginas públicas en `app/sitemap.ts`.

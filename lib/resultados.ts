@@ -10,6 +10,7 @@ export type Resultado = {
   tipo_resultado: "Recomendada" | "Recomendada con nota" | "Sin afinidad clara";
   nivel_congruencia: "Alta" | "Media" | "Baja";
   perfil_plano: boolean;
+  atencion_ok: boolean | null; // false = falló alguna pregunta de control; null = la versión no tiene
   puntajes: {
     dimensiones: Record<string, number>;
     interes: Record<string, number>;
@@ -18,7 +19,7 @@ export type Resultado = {
   informe_ia: InformeIA | null; // comentario de A.N.A ya generado (lo guarda el backend)
 };
 
-const COLUMNAS = "id_resultado, creado_en, codigo_riasec, especialidad, tipo_resultado, nivel_congruencia, perfil_plano, puntajes, informe_ia";
+const COLUMNAS = "id_resultado, creado_en, codigo_riasec, especialidad, tipo_resultado, nivel_congruencia, perfil_plano, atencion_ok, puntajes, informe_ia";
 
 // El catálogo de especialidades no es legible para el navegador; estos datos son fijos y públicos
 export const ESPECIALIDADES: Record<string, { nombre: string; area: Area; color: string; riasec: string }> = {

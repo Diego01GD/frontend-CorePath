@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import EnlaceRegresar from "./enlace-regresar";
 import MenuUsuario from "./menu-usuario";
 
-// Acciones del encabezado protegido; en /test el diseño solo muestra "Guardar y salir"
+// Acciones del encabezado protegido; en /test el diseño solo muestra "Guardar y salir" y en /chat solo el menú de usuario
 export default function AccionesSesion() {
   const pathname = usePathname();
 
@@ -22,8 +22,9 @@ export default function AccionesSesion() {
 
   return (
     <nav className="flex shrink-0 items-center gap-2 sm:gap-5" aria-label="Sesión">
-      {/* En móvil solo la flecha: el texto queda para lectores de pantalla y así cabe el encabezado */}
-      <EnlaceRegresar href="/"><span className="max-sm:sr-only">Inicio</span></EnlaceRegresar>
+      {/* En móvil solo la flecha: el texto queda para lectores de pantalla y así cabe el encabezado.
+          /chat ya tiene su propio "Regresar" (diseño de Figma) */}
+      {pathname !== "/chat" && <EnlaceRegresar href="/"><span className="max-sm:sr-only">Inicio</span></EnlaceRegresar>}
       <MenuUsuario />
     </nav>
   );

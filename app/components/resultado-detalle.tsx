@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Clock3, FileText } from "lucide-react";
+import { Clock3, FileText, TriangleAlert } from "lucide-react";
 import EnlaceRegresar from "./enlace-regresar";
 import RadarRiasec from "./radar-riasec";
 import { COLOR_DIMENSION, DIMENSIONES, ESPECIALIDAD_POR_NOMBRE, ESPECIALIDADES, EXPLICACION, formatoFecha, type Resultado } from "@/lib/resultados";
@@ -24,6 +24,18 @@ export default function ResultadoDetalle({ resultado }: { resultado: Resultado }
             {esp?.nombre ?? "Sin afinidad clara"}
           </h1>
           <p className="mt-4 max-w-xl text-lg leading-8 text-ctext-2">{EXPLICACION[resultado.tipo_resultado]}</p>
+
+          {/* Solo false: null significa que esta versión del test no tiene preguntas de control */}
+          {resultado.atencion_ok === false && (
+            <div role="note" className="mt-6 flex max-w-xl gap-3 rounded-2xl border border-error/40 bg-error/10 p-4 leading-6">
+              <TriangleAlert size={20} className="mt-0.5 shrink-0 text-error" aria-hidden="true" />
+              <p>
+                <strong>Este resultado podría no reflejar bien tus intereses.</strong> Algunas preguntas de control no se
+                contestaron como se esperaba, algo que pasa al responder con prisa. Si fue tu caso,{" "}
+                <Link href="/test" className="font-semibold text-primary underline">repite el test</Link> con calma.
+              </p>
+            </div>
+          )}
 
           <h2 className="mt-10 font-titulos text-xl font-semibold">Tu código RIASEC</h2>
           <ol className="mt-3 grid grid-cols-3 gap-2 sm:flex sm:gap-3">

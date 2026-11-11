@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Clock3, ListChecks, Save } from "lucide-react";
 import { api, ApiError, type TestItems } from "@/lib/api";
+import { claveProgreso, guardarProgreso, leerProgreso } from "@/lib/progreso-test";
 import { DIAS_RETENCION } from "@/lib/retencion";
 import { createClient } from "@/lib/supabase/client";
 
@@ -18,31 +19,6 @@ const ESCALA = [
   { valor: 5, etiqueta: "Mucho" },
 ];
 
-type Progreso = { indice: number; respuestas: Record<string, number> };
-
-// Progreso por usuario y versión en este navegador ("Puedes pausar"). El navegador no es fuente de verdad: el backend valida todo.
-const claveProgreso = (usuario: string, version: string) =>
-  `corepath:test:${usuario}:${version}`;
-
-function leerProgreso(clave: string): Progreso | null {
-  try {
-    const p = JSON.parse(localStorage.getItem(clave) ?? "null");
-    return p && typeof p.indice === "number" && typeof p.respuestas === "object"
-      ? p
-      : null;
-  } catch {
-    return null;
-  }
-}
-
-function guardarProgreso(clave: string, progreso: Progreso | null) {
-  try {
-    if (progreso) localStorage.setItem(clave, JSON.stringify(progreso));
-    else localStorage.removeItem(clave);
-  } catch {
-    // Modo privado o almacenamiento bloqueado: el test sigue funcionando, solo no se puede pausar
-  }
-}
 
 export default function TestPage() {
   const router = useRouter();
@@ -423,7 +399,7 @@ function AvisoInicio({
           <li className="flex gap-3">
             <Save size={20} className="mt-0.5 shrink-0 text-primary" aria-hidden="true" />
             <span>
-              Tu avance se guarda solo en este navegador. Con <strong>Guardar y salir</strong> puedes continuar después, aquí mismo y con tu cuenta.
+              Si recargas la página, continúas donde ibas. Tu avance se guarda solo en esta pestaña y se borra al cerrarla o tras 2 horas.
             </span>
           </li>
           <li className="flex gap-3">

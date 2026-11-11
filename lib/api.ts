@@ -91,7 +91,7 @@ export const api = {
   informe: (idResultado: string) =>
     apiFetch<InformeIA>(`/api/test/resultados/${encodeURIComponent(idResultado)}/informe`, { method: "POST" }),
 
-  // El backend acepta máximo 20 mensajes de historial y 1000 caracteres por pregunta
+  // El backend acepta máximo 20 mensajes de historial y 500 caracteres por pregunta
   chat: (mensaje: string, area: Area, historial: Mensaje[] = []) =>
     apiFetch<RespuestaChat>("/api/chat", {
       method: "POST",
