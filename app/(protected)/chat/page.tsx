@@ -165,7 +165,7 @@ export default function ChatPage() {
         </div>
 
         <div
-          className={`flex items-center lg:col-start-2 lg:row-start-2 lg:flex-col lg:gap-4 lg:self-start lg:pt-10 ${
+          className={`relative flex items-center lg:col-start-2 lg:row-start-2 lg:flex-col lg:gap-4 lg:self-start lg:pt-10 ${
             enfocado && !vacio ? "gap-3 max-lg:flex-row" : "flex-col gap-2"
           }`}
         >
@@ -173,23 +173,15 @@ export default function ChatPage() {
             estado={estado}
             pausado={pausado}
             className={`shrink-0 transition-[width,height] duration-300 lg:size-70 ${
-              vacio ? "size-42 bajo:size-28" : enfocado ? "size-14" : "size-32 bajo:size-20"
+              vacio ? "size-42 max-lg:bajo:size-28" : enfocado ? "size-14" : "size-32 max-lg:bajo:size-20"
             }`}
           />
           <p className="font-titulos text-2xl font-bold max-lg:hidden">A.N.A</p>
-          <div className="flex items-center gap-1">
-            <div className={`flex ${enfocado && !vacio ? "flex-col" : ""}`}>
+          {/* Móvil: el control va junto a A.N.A para no ocupar otra fila; el estado solo se ve en la versión compacta */}
+          <div className={`flex items-center gap-1 ${enfocado && !vacio ? "" : "max-lg:absolute max-lg:bottom-0 max-lg:left-1/2 max-lg:translate-x-14"}`}>
+            <div>
               {enfocado && !vacio && <p className="font-bold lg:hidden">A.N.A</p>}
-              <p
-                role="status"
-                className={`flex items-center gap-2 text-etiqueta lg:sr-only ${
-                  enfocado && !vacio ? "text-ctext-2" : "rounded-full border border-bordes-s px-3.5 py-1.5 font-semibold"
-                }`}
-              >
-                <span
-                  aria-hidden="true"
-                  className={`size-2 rounded-full ${enfocado && !vacio ? "hidden" : estado === "error" ? "bg-error" : estado === "reposo" ? "bg-success" : "bg-primary"}`}
-                />
+              <p role="status" className={enfocado && !vacio && estado !== "reposo" ? "text-etiqueta text-ctext-2 lg:sr-only" : "sr-only"}>
                 {TEXTO_ESTADO[estado]}
               </p>
             </div>
@@ -209,7 +201,8 @@ export default function ChatPage() {
       </div>
 
       <section aria-label="Conversación con A.N.A" className="flex min-h-0 flex-1 flex-col lg:col-start-1 lg:row-start-2">
-        <div className="-mx-4 flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain px-4">
+        {/* relative: sin él, los textos sr-only (absolute) se miden contra la página y le agregan un segundo scroll */}
+        <div className="relative -mx-4 flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain px-4">
         {vacio ? (
           <div className="flex flex-1 flex-col pt-2 text-center lg:justify-center lg:pb-16 lg:text-left">
             <h1 className="font-titulos text-3xl leading-tight font-bold lg:text-titulo-chat">¿En qué puedo ayudarte hoy?</h1>

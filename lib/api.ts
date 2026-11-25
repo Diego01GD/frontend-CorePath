@@ -1,3 +1,4 @@
+import { cabeceraSesion, medir } from "./metricas";
 import { createClient } from "./supabase/client";
 
 // Cliente del backend FastAPI (navegador). Adjunta el token de Supabase en cada petición.
@@ -9,6 +10,9 @@ export class ApiError extends Error {
   }
 }
 
+// Sin consulta ni identificadores de resultados en las métricas
+const rutaSinIds = (path: string) => path.split("?")[0].replace(/\/resultados\/[^/]+/, "/resultados/{id}");
+
 async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
   const { data } = await createClient().auth.getSession();
   const token = data.session?.access_token;
@@ -16,6 +20,9 @@ async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
   if (!token) throw new ApiError(401, "Inicia sesión para continuar.");
 
   let res: Response;
+  const inicio = performance.now();
+  const registrar = (estado: number) =>
+    medir("peticion", { ruta: `${init.method ?? "GET"} ${rutaSinIds(path)}`, estado, ms: Math.round(performance.now() - inicio) });
   try {
     res = await fetch(`${API_URL}${path}`, {
       ...init,
@@ -24,21 +31,27 @@ async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
         Authorization: `Bearer ${token}`,
         // Evita la página de advertencia de ngrok (plan gratuito) en las respuestas de la API
         "ngrok-skip-browser-warning": "1",
+        ...cabeceraSesion(),
         ...init.headers,
       },
     });
   } catch {
+    registrar(0);
     // fetch solo lanza si no hubo respuesta: backend o túnel apagados, sin internet o bloqueo por CORS/CSP
     throw new ApiError(0, "No se pudo conectar con el servidor. Verifica que el backend esté encendido e intenta de nuevo.");
   }
 
   if (!res.ok) {
+    registrar(res.status);
     const body = await res.json().catch(() => null);
     // FastAPI manda `detail` como texto (errores propios) o lista (validación 422)
     const detail = typeof body?.detail === "string" ? body.detail : "No se pudo completar la solicitud.";
     throw new ApiError(res.status, detail);
   }
-  return res.json() as Promise<T>;
+  const cuerpo = (await res.json()) as T;
+  // /api/chat responde 200 con estado_avatar "error" si el modelo falló: para el alumno es un error
+  registrar((cuerpo as { estado_avatar?: string }).estado_avatar === "error" ? 503 : res.status);
+  return cuerpo;
 }
 
 export type Area = "ciberseguridad" | "desarrollo" | "ia";
