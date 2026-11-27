@@ -73,6 +73,10 @@ export type ResultadoTest = {
   tipo_resultado: "Recomendada" | "Recomendada con nota" | "Sin afinidad clara";
   especialidad: string | null;
   area: Area | null;
+  margen: number;
+  opcion_cercana: string | null; // segunda especialidad si queda a menos de 0.5
+  area_opcion_cercana: Area | null;
+  perfil: { letra: string; dimension: string; especialidades: string[] }[]; // explica, no decide
   empate: string;
   atencion_ok: boolean | null;
 };

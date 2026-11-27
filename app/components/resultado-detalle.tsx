@@ -3,6 +3,7 @@ import { Clock3, FileText, TriangleAlert } from "lucide-react";
 import EnlaceRegresar from "./enlace-regresar";
 import RadarRiasec from "./radar-riasec";
 import { COLOR_DIMENSION, DIMENSIONES, ESPECIALIDAD_POR_NOMBRE, ESPECIALIDADES, EXPLICACION, formatoFecha, type Resultado } from "@/lib/resultados";
+import { dosResultados } from "@/lib/informe";
 import { diasRestantes, fechaBorrado } from "@/lib/retencion";
 
 // shortcut: vista provisional del resultado; reemplazar por el diseño final de Figma cuando esté listo
@@ -10,6 +11,7 @@ export default function ResultadoDetalle({ resultado }: { resultado: Resultado }
   const esp = resultado.especialidad ? ESPECIALIDADES[resultado.especialidad] : null;
   const dias = diasRestantes(resultado.creado_en);
   const interes = Object.entries(resultado.puntajes.interes).sort(([, a], [, b]) => b - a);
+  const { cercana, letras, resumen } = dosResultados(resultado);
 
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-8 sm:px-6 lg:py-12">
@@ -19,11 +21,20 @@ export default function ResultadoDetalle({ resultado }: { resultado: Resultado }
         <section aria-labelledby="titulo-resultado" className="min-w-0">
           <p className="text-ctext-2">
             Test del <time dateTime={resultado.creado_en}>{formatoFecha(resultado.creado_en)}</time>
+            {esp && <> · Resultado por interés</>}
           </p>
           <h1 id="titulo-resultado" className="mt-2 font-titulos text-4xl leading-tight font-bold break-words sm:text-5xl lg:text-6xl" style={esp ? { color: esp.color } : undefined}>
             {esp?.nombre ?? "Sin afinidad clara"}
           </h1>
           <p className="mt-4 max-w-xl text-lg leading-8 text-ctext-2">{EXPLICACION[resultado.tipo_resultado]}</p>
+
+          {cercana && (
+            <p role="note" className="mt-4 max-w-xl rounded-2xl border border-bordes-s/40 bg-cards p-4 leading-6">
+              <strong>Opción cercana: <span style={{ color: cercana.color }}>{cercana.nombre}</span>.</strong>{" "}
+              Tu interés en ella ({cercana.valor.toFixed(1)} de 5) quedó a solo {cercana.margen.toFixed(2)} de la recomendada.
+              Explora las dos antes de decidir.
+            </p>
+          )}
 
           {/* Solo false: null significa que esta versión del test no tiene preguntas de control */}
           {resultado.atencion_ok === false && (
@@ -37,7 +48,10 @@ export default function ResultadoDetalle({ resultado }: { resultado: Resultado }
             </div>
           )}
 
-          <h2 className="mt-10 font-titulos text-xl font-semibold">Tu código RIASEC</h2>
+          <h2 className="mt-10 font-titulos text-xl font-semibold">Resultado por perfil RIASEC</h2>
+          <p className="mt-1 max-w-xl text-sm leading-6 text-ctext-2">
+            Tu código son tus tres tipos de interés más altos. Explica qué rasgos tuyos encajan con cada especialidad; no cambia la recomendación.
+          </p>
           <ol className="mt-3 grid grid-cols-3 gap-2 sm:flex sm:gap-3">
             {resultado.codigo_riasec.split("").map((letra, i) => (
               <li key={letra} className="flex min-w-0 flex-col items-center rounded-2xl border border-bordes-s/40 bg-cards px-2 py-3 sm:min-w-24 sm:px-4">
@@ -47,6 +61,20 @@ export default function ResultadoDetalle({ resultado }: { resultado: Resultado }
               </li>
             ))}
           </ol>
+          <p className="mt-4 max-w-xl leading-7">{resumen}</p>
+          <ul className="mt-3 flex max-w-xl flex-col gap-3 text-sm leading-6">
+            {letras.map((l) => (
+              <li key={l.letra}>
+                <span className="font-semibold" style={{ color: `var(${COLOR_DIMENSION[l.letra]})` }}>{l.letra} · {l.dimension}:</span>{" "}
+                {l.nota ?? l.especialidades.map((e, i) => (
+                  <span key={e.nombre}>
+                    {i > 0 && "; "}en <span className="font-semibold" style={{ color: e.color }}>{e.nombre}</span>, {e.texto}
+                  </span>
+                ))}
+                {!l.nota && "."}
+              </li>
+            ))}
+          </ul>
 
           <h2 className="mt-10 font-titulos text-xl font-semibold">Interés por especialidad</h2>
           <dl className="mt-4 flex flex-col gap-4">

@@ -21,7 +21,7 @@ type Props = {
 export default function InformeVista({ resultado, correo, ia, errorIa, generando, onDescargar, onReintentar }: Props) {
   const esperandoIa = !ia && !errorIa;
   const p = resultado.puntajes;
-  const { esp, interes, maxDim, minDim, congruencias, regla } = datosInforme(resultado);
+  const { esp, interes, maxDim, minDim, congruencias, regla, cercana, letras, resumen } = datosInforme(resultado);
 
   return (
     <main className="mx-auto w-full min-w-0 max-w-4xl flex-1 px-5 py-6 print:max-w-none print:p-0 sm:px-6 sm:py-8">
@@ -63,19 +63,27 @@ export default function InformeVista({ resultado, correo, ia, errorIa, generando
           </p>
           <p className="mt-1 font-semibold">{resultado.tipo_resultado}</p>
           <p className="mt-3 max-w-2xl leading-7 text-ctext-2">{EXPLICACION[resultado.tipo_resultado]}</p>
+          {cercana && (
+            <p className="mt-3 max-w-2xl leading-7">
+              <strong>Opción cercana: <span style={{ color: cercana.color }}>{cercana.nombre}</span></strong> ({cercana.valor.toFixed(2)} de 5,
+              {" "}a solo {cercana.margen.toFixed(2)} de la recomendada).
+            </p>
+          )}
         </section>
 
         <section className="mt-10" aria-labelledby="h-como">
           <h2 id="h-como" className="font-titulos text-2xl font-semibold">Cómo se llegó a esta recomendación</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-ctext-2">
-            El test combina tres mediciones. Estos son tus números en cada una y la regla que decidió tu resultado.
+            El test entrega dos resultados. La especialidad sale de tu interés (1). Tu perfil RIASEC (2 y 3) no la cambia:
+            explica qué rasgos tuyos encajan con cada especialidad.
           </p>
 
           <ol className="mt-6 flex flex-col gap-8">
             <li className="break-inside-avoid">
               <h3 className="font-semibold">1. Interés directo por especialidad</h3>
               <p className="mt-1 text-sm leading-6 text-ctext-2">
-                Promedio de tus respuestas a las actividades de cada especialidad (de 1 a 5). Se recomienda la de mayor interés si llega a {UMBRALES.interesAlto}.
+                Promedio de tus respuestas a las actividades de cada especialidad (de 1 a 5). Se recomienda siempre la de mayor interés; la recomendación es
+                clara si llega a {UMBRALES.interesAlto} y le saca {UMBRALES.margenCercana} o más a la segunda. Si no, va con nota.
               </p>
               <dl className="mt-3 flex flex-col gap-3">
                 {interes.map(({ clave, nombre, valor, color }) => (
@@ -92,7 +100,7 @@ export default function InformeVista({ resultado, correo, ia, errorIa, generando
                   </div>
                 ))}
               </dl>
-              <p className="mt-2 text-xs text-ctext-2">La línea vertical marca el mínimo de {UMBRALES.interesAlto}.</p>
+              <p className="mt-2 text-xs text-ctext-2">La línea vertical marca {UMBRALES.interesAlto}.</p>
             </li>
 
             <li className="break-inside-avoid">
@@ -105,13 +113,28 @@ export default function InformeVista({ resultado, correo, ia, errorIa, generando
                 Tu dimensión más alta: <strong>{maxDim.toFixed(2)}</strong>. Diferencia entre la más alta y la más baja: <strong>{(maxDim - minDim).toFixed(2)}</strong>.
                 {" "}Perfil plano: <strong>{resultado.perfil_plano ? "sí" : "no"}</strong>.
               </p>
+              <p className="mt-3 text-sm leading-6">{resumen}</p>
+              <ul className="mt-2 flex flex-col gap-2 text-sm leading-6">
+                {letras.map((l) => (
+                  <li key={l.letra}>
+                    <span className="font-semibold" style={{ color: `var(${COLOR_DIMENSION[l.letra]})` }}>{l.letra} · {l.dimension}:</span>{" "}
+                    {l.nota ?? l.especialidades.map((e, i) => (
+                      <span key={e.nombre}>
+                        {i > 0 && "; "}en <span className="font-semibold">{e.nombre}</span>, {e.texto}
+                      </span>
+                    ))}
+                    {!l.nota && "."}
+                  </li>
+                ))}
+              </ul>
             </li>
 
             <li className="break-inside-avoid">
               <h3 className="font-semibold">3. Congruencia con cada especialidad</h3>
               <p className="mt-1 text-sm leading-6 text-ctext-2">
                 Compara tu código, letra por letra, con el código RIASEC de cada especialidad en el hexágono de Holland. 18 puntos es coincidencia total;
-                {" "}{UMBRALES.congruenciaAlta} o más es alta y {UMBRALES.congruenciaMedia} o más es media.
+                {" "}{UMBRALES.congruenciaAlta} o más es alta y {UMBRALES.congruenciaMedia} o más es media. Es informativa: los códigos de las tres
+                especialidades empiezan con I y se parecen mucho, así que la congruencia sale parecida en las tres y no se usa para decidir.
               </p>
               <div className="min-w-0 overflow-x-auto"><table className="mt-3 w-full text-left text-xs sm:text-sm">
                 <thead className="text-ctext-2">
@@ -140,7 +163,7 @@ export default function InformeVista({ resultado, correo, ia, errorIa, generando
           </ol>
 
           <div className="mt-8 break-inside-avoid rounded-2xl bg-primary/10 p-5 print:border print:border-bordes-s/40">
-            <p className="text-sm font-semibold">La regla que decidió tu resultado</p>
+            <p className="text-sm font-semibold">Cómo se decidió tu resultado</p>
             <p className="mt-1 leading-7">
               {regla}
             </p>

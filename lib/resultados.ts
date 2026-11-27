@@ -6,7 +6,7 @@ export type Resultado = {
   id_resultado: string;
   creado_en: string;
   codigo_riasec: string;
-  especialidad: string | null; // código: CIB | WEB | IA (null = sin afinidad clara)
+  especialidad: string | null; // código: CIB | WEB | IA (null solo en resultados anteriores a la v4: "Sin afinidad clara")
   tipo_resultado: "Recomendada" | "Recomendada con nota" | "Sin afinidad clara";
   nivel_congruencia: "Alta" | "Media" | "Baja";
   perfil_plano: boolean;
@@ -80,17 +80,20 @@ export const DESCRIPCION_DIMENSION: Record<string, string> = {
 };
 
 // Copia de parametros_calificacion en Supabase (el navegador no puede leer esa tabla). Si se cambian allá, actualizar aquí.
-export const UMBRALES = { congruenciaAlta: 13, congruenciaMedia: 8, interesAlto: 3.5, planoMax: 3.0, planoRango: 0.5 };
+export const UMBRALES = { congruenciaAlta: 13, congruenciaMedia: 8, interesAlto: 3.5, planoMax: 3.0, planoRango: 0.5, margenCercana: 0.5 };
 
 export const nivel = (v: number) => (v >= 3.5 ? "alto" : v >= 2.5 ? "medio" : "bajo");
 
 export const EXPLICACION: Record<Resultado["tipo_resultado"], string> = {
-  Recomendada: "Tus intereses apuntan con claridad a esta especialidad y tu perfil RIASEC coincide con ella.",
+  Recomendada: "Es la especialidad que más te interesa, con una ventaja clara sobre las otras dos.",
   "Recomendada con nota":
-    "Es el área que más te interesa, aunque tu perfil RIASEC coincide solo en parte. Vale la pena explorarla con A.N.A antes de decidir.",
+    "Es la especialidad que más te interesa, aunque la ventaja es pequeña o tu interés es moderado. Explórala con A.N.A antes de decidir.",
   "Sin afinidad clara":
     "Tus respuestas no muestran una preferencia marcada por una sola especialidad. Conversa con A.N.A para conocer mejor las tres.",
 };
+
+/** Datos de las especialidades en el formato de lib/perfil.ts; la clave es el nombre que usa el backend en puntajes. */
+export const ESPECIALIDADES_PERFIL = Object.entries(ESPECIALIDAD_POR_NOMBRE).map(([clave, e]) => ({ clave, ...e }));
 
 export const formatoFecha = (iso: string | Date) =>
   new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", year: "numeric" }).format(new Date(iso));

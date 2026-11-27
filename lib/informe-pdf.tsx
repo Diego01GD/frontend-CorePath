@@ -118,15 +118,20 @@ function InformeDocumento({ r, ia, correo }: { r: Resultado; ia: InformeIA | nul
           <Text style={{ fontFamily: "Fraunces", fontWeight: 700, fontSize: 24, lineHeight: 1.3, marginBottom: 2, color: colorEsp }}>{d.esp?.nombre ?? "Sin afinidad clara"}</Text>
           <Text style={{ fontWeight: 600 }}>{r.tipo_resultado}</Text>
           <Text style={[s.tenue, { marginTop: 4 }]}>{EXPLICACION[r.tipo_resultado]}</Text>
+          {d.cercana && (
+            <Text style={{ marginTop: 4 }}>
+              <Text style={{ fontWeight: 700 }}>Opción cercana: {d.cercana.nombre}</Text> ({d.cercana.valor.toFixed(2)} de 5, a solo {d.cercana.margen.toFixed(2)} de la recomendada).
+            </Text>
+          )}
         </View>
 
         <View style={s.seccion}>
           <Text style={s.h2}>Cómo se llegó a esta recomendación</Text>
-          <Text style={s.tenue}>El test combina tres mediciones. Estos son tus números en cada una y la regla que decidió tu resultado.</Text>
+          <Text style={s.tenue}>El test entrega dos resultados. La especialidad sale de tu interés (1). Tu perfil RIASEC (2 y 3) no la cambia: explica qué rasgos tuyos encajan con cada especialidad.</Text>
 
           <View style={{ marginTop: 10 }} wrap={false}>
             <Text style={s.h3}>1. Interés directo por especialidad</Text>
-            <Text style={s.chico}>Promedio de tus respuestas a las actividades de cada especialidad (de 1 a 5). Se recomienda la de mayor interés si llega a {UMBRALES.interesAlto}; la línea marca ese mínimo.</Text>
+            <Text style={s.chico}>Promedio de tus respuestas a las actividades de cada especialidad (de 1 a 5). Se recomienda siempre la de mayor interés; es clara si llega a {UMBRALES.interesAlto} (la línea) y le saca {UMBRALES.margenCercana} o más a la segunda. Si no, va con nota.</Text>
             {d.interes.map((e) => (
               <View key={e.clave} style={{ marginTop: 6 }}>
                 <View style={s.fila}>
@@ -149,12 +154,19 @@ function InformeDocumento({ r, ia, correo }: { r: Resultado; ia: InformeIA | nul
             <Text style={{ marginTop: 3 }}>
               Dimensión más alta: {d.maxDim.toFixed(2)}. Diferencia entre la más alta y la más baja: {(d.maxDim - d.minDim).toFixed(2)}. Perfil plano: {r.perfil_plano ? "sí" : "no"}.
             </Text>
+            <Text style={{ marginTop: 4 }}>{d.resumen}</Text>
+            {d.letras.map((l) => (
+              <Text key={l.letra} style={{ marginTop: 2 }}>
+                <Text style={{ fontWeight: 700, color: C.dim[l.letra] }}>{l.letra} · {l.dimension}: </Text>
+                {l.nota ?? l.especialidades.map((e) => `en ${e.nombre}, ${e.texto}`).join("; ") + "."}
+              </Text>
+            ))}
           </View>
 
           <View style={{ marginTop: 12 }} wrap={false}>
             <Text style={s.h3}>3. Congruencia con cada especialidad</Text>
             <Text style={s.chico}>
-              Compara tu código, letra por letra, con el de cada especialidad en el hexágono de Holland. 18 puntos es coincidencia total; {UMBRALES.congruenciaAlta} o más es alta y {UMBRALES.congruenciaMedia} o más es media.
+              Compara tu código, letra por letra, con el de cada especialidad en el hexágono de Holland. 18 puntos es coincidencia total; {UMBRALES.congruenciaAlta} o más es alta y {UMBRALES.congruenciaMedia} o más es media. Es informativa: los tres códigos empiezan con I y se parecen mucho, así que no se usa para decidir.
             </Text>
             <View style={[s.fila, s.celda, { marginTop: 4 }]}>
               <Text style={[s.tenue, { width: "40%" }]}>Especialidad</Text>
@@ -173,7 +185,7 @@ function InformeDocumento({ r, ia, correo }: { r: Resultado; ia: InformeIA | nul
           </View>
 
           <View style={s.recuadro} wrap={false}>
-            <Text style={{ fontWeight: 700, fontSize: 9 }}>La regla que decidió tu resultado</Text>
+            <Text style={{ fontWeight: 700, fontSize: 9 }}>Cómo se decidió tu resultado</Text>
             <Text style={{ marginTop: 2 }}>{d.regla}</Text>
           </View>
         </View>
