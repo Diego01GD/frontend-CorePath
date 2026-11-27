@@ -11,7 +11,7 @@ const VISTAS = [
   { clave: "resultado", nombre: "Pantalla de resultado" },
 ] as const;
 const MAX_TEXTO = 1000;
-const ESPERA_MS = 8000;
+const ESPERA_MS = 3000;
 
 type Calificaciones = Record<(typeof VISTAS)[number]["clave"], number | null>;
 
