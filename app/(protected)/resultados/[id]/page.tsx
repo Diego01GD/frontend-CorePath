@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import EvaluacionVistas from "../../../components/evaluacion-vistas";
 import ResultadoDetalle from "../../../components/resultado-detalle";
 import { obtenerResultado, type Resultado } from "@/lib/resultados";
 
@@ -33,5 +34,10 @@ export default function ResultadoPage() {
     );
   }
 
-  return <ResultadoDetalle resultado={resultado} />;
+  return (
+    <>
+      <ResultadoDetalle resultado={resultado} />
+      <EvaluacionVistas idResultado={id} />
+    </>
+  );
 }

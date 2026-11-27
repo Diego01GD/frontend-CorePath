@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Clock3, ListChecks, Save } from "lucide-react";
 import { api, ApiError, type TestItems } from "@/lib/api";
+import { pedirEvaluacion } from "@/lib/metricas";
 import { claveProgreso, guardarProgreso, leerProgreso } from "@/lib/progreso-test";
 import { DIAS_RETENCION } from "@/lib/retencion";
 import { createClient } from "@/lib/supabase/client";
@@ -135,6 +136,7 @@ export default function TestPage() {
     try {
       const r = await api.enviarTest(test.id_version, respuestas);
       guardarProgreso(clave, null);
+      pedirEvaluacion(r.id_resultado);
       // Se queda en "Enviando…" mientras navega al resultado guardado
       router.push(`/resultados/${r.id_resultado}`);
     } catch (e) {
